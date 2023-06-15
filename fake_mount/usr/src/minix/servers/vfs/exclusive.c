@@ -18,7 +18,7 @@ int do_exclusive(void) {
 	pid_t caller = _ENDPOINT_P(who_e);
 	uid_t owner;
 	int error;
-	if (error = find_owner(caller, &owner))
+	if ((error = find_owner(caller, &owner)))
 		return error;
 	
 	return(0);  // TODO: implementacja VFS_EXCLUSIVE
