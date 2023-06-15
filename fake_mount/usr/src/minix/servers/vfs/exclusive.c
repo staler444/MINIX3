@@ -21,8 +21,7 @@ int do_exclusive(void) {
 	if (error = find_owner(caller, &owner))
 		return error;
 	
-	printf("%d", owner);
-	return(ENOSYS);  // TODO: implementacja VFS_EXCLUSIVE
+	return(0);  // TODO: implementacja VFS_EXCLUSIVE
 }
 
 int do_fexclusive(void) {
