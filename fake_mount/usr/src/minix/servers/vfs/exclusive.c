@@ -16,12 +16,13 @@ int find_owner(pid_t caller, uid_t* owner) {
 
 int do_exclusive(void) {
 	pid_t caller = _ENDPOINT_P(who_e);
-	uid_t owner;
+	uid_t owner = 0;
 	int error;
+	printf("HERE");
 	if ((error = find_owner(caller, &owner)))
 		return error;
-	
-	return(0);  // TODO: implementacja VFS_EXCLUSIVE
+	printf("%d", owner);
+	return(ENOSYS);  // TODO: implementacja VFS_EXCLUSIVE
 }
 
 int do_fexclusive(void) {
