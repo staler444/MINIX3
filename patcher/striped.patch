@@ -1,0 +1,62 @@
+diff --git a/usr/src/minix/include/minix/callnr.h b/usr/src/minix/include/minix/callnr.h
+index 6030687..a543d38 100644
+--- a/usr/src/minix/include/minix/callnr.h
++++ b/usr/src/minix/include/minix/callnr.h
+@@ -118,7 +118,9 @@
+ #define VFS_COPYFD		(VFS_BASE + 46)
+ #define VFS_CHECKPERMS		(VFS_BASE + 47)
+ #define VFS_GETSYSINFO		(VFS_BASE + 48)
++#define VFS_EXCLUSIVE		(VFS_BASE + 49)
++#define VFS_FEXCLUSIVE		(VFS_BASE + 50)
+ 
+-#define NR_VFS_CALLS		49	/* highest number from base plus one */
++#define NR_VFS_CALLS		51	/* highest number from base plus one */
+ 
+ #endif /* !_MINIX_CALLNR_H */
+diff --git a/usr/src/minix/include/minix/ipc.h b/usr/src/minix/include/minix/ipc.h
+index 622c40d..641ab12 100644
+--- a/usr/src/minix/include/minix/ipc.h
++++ b/usr/src/minix/include/minix/ipc.h
+@@ -841,6 +841,16 @@ typedef struct {
+ } mess_lc_vfs_umount;
+ _ASSERT_MSG_SIZE(mess_lc_vfs_umount);
+ 
++typedef struct {
++	int fd;
++	vir_bytes name;
++	size_t len;
++	int flags;
++
++	uint8_t padding[40];
++} mess_lc_vfs_exclusive;
++_ASSERT_MSG_SIZE(mess_lc_vfs_exclusive);
++
+ typedef struct {
+ 	void		*addr;
+ 	uint8_t		padding[52];
+@@ -2121,6 +2131,7 @@ typedef struct {
+ 		mess_lc_vfs_truncate	m_lc_vfs_truncate;
+ 		mess_lc_vfs_umask	m_lc_vfs_umask;
+ 		mess_lc_vfs_umount	m_lc_vfs_umount;
++		mess_lc_vfs_exclusive	m_lc_vfs_exclusive;
+ 		mess_lc_vm_brk		m_lc_vm_brk;
+ 		mess_lc_vm_getphys	m_lc_vm_getphys;
+ 		mess_lc_vm_rusage	m_lc_vm_rusage;
+diff --git a/usr/src/sys/sys/fcntl.h b/usr/src/sys/sys/fcntl.h
+index 6caaf29..65095df 100644
+--- a/usr/src/sys/sys/fcntl.h
++++ b/usr/src/sys/sys/fcntl.h
+@@ -301,6 +301,13 @@ struct flock {
+ #define	AT_REMOVEDIR		0x800	/* Remove directory only */
+ #endif
+ 
++/*
++ * Constants for exclusive lock.
++ */
++#define EXCL_UNLOCK				1	/* Unlock. */
++#define EXCL_UNLOCK_FORCE		2	/* Forced unlock by privileged users. */
++#define EXCL_LOCK				4	/* Lock unconditionally. */
++#define EXCL_LOCK_NO_OTHERS		8	/* Lock if no other users have this file opened. */
+ 
+ #ifndef _KERNEL
+ #include <sys/cdefs.h>
