@@ -1,7 +1,6 @@
 #include "fs.h"
 #include "glo.h"
 #include "fproc.h"
-#include <asm-generic/errno.h>
 #include <minix/endpoint.h>
 #include <stdio.h>
 
