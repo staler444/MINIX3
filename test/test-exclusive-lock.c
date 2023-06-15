@@ -6,6 +6,7 @@
 #include <string.h>
 
 int main(int argc, char *argv[]) {
+    printf("MyPid = %d\n", getpid());
     message m;
     endpoint_t vfs_ep;
     int flags;
