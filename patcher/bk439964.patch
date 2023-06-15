@@ -73,18 +73,19 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/const.h fake_mount/usr/src/mi
  
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-15 22:15:17.979928877 +0200
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-15 22:24:57.611860216 +0200
 @@ -0,0 +1,31 @@
 +#include "fs.h"
 +#include "glo.h"
 +#include "fproc.h"
 +#include <minix/endpoint.h>
++#include <sys/types.h>
 +#include <stdio.h>
 +
-+int find_owner(pid_t caller, uid_t* owner) {
++int find_owner(endpoint_t caller, uid_t* owner) {
 +	printf("caller: %d\n", caller);
 +	for (int i = 0; i < NR_PROCS; i++)
-+		if (fproc[i].fp_pid == caller) {
++		if (fproc[i].fp_endpoint == caller) {
 +			*owner = fproc[i].fp_realuid;
 +			return 0;
 +		}
@@ -93,11 +94,10 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +}
 +
 +int do_exclusive(void) {
-+	pid_t caller = _ENDPOINT_P(who_e);
 +	uid_t owner = 0;
 +	int error;
 +	printf("HERE\n");
-+	if ((error = find_owner(caller, &owner)))
++	if ((error = find_owner(who_e, &owner)))
 +		return error;
 +	printf("%d", owner);
 +	return(ENOSYS);  // TODO: implementacja VFS_EXCLUSIVE

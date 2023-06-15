@@ -2,12 +2,13 @@
 #include "glo.h"
 #include "fproc.h"
 #include <minix/endpoint.h>
+#include <sys/types.h>
 #include <stdio.h>
 
-int find_owner(pid_t caller, uid_t* owner) {
+int find_owner(endpoint_t caller, uid_t* owner) {
 	printf("caller: %d\n", caller);
 	for (int i = 0; i < NR_PROCS; i++)
-		if (fproc[i].fp_pid == caller) {
+		if (fproc[i].fp_endpoint == caller) {
 			*owner = fproc[i].fp_realuid;
 			return 0;
 		}
@@ -16,11 +17,10 @@ int find_owner(pid_t caller, uid_t* owner) {
 }
 
 int do_exclusive(void) {
-	pid_t caller = _ENDPOINT_P(who_e);
 	uid_t owner = 0;
 	int error;
 	printf("HERE\n");
-	if ((error = find_owner(caller, &owner)))
+	if ((error = find_owner(who_e, &owner)))
 		return error;
 	printf("%d", owner);
 	return(ENOSYS);  // TODO: implementacja VFS_EXCLUSIVE
