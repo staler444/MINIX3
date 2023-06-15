@@ -73,8 +73,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/const.h fake_mount/usr/src/mi
  
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-15 21:49:38.341363746 +0200
-@@ -0,0 +1,30 @@
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-15 22:15:17.979928877 +0200
+@@ -0,0 +1,31 @@
 +#include "fs.h"
 +#include "glo.h"
 +#include "fproc.h"
@@ -82,12 +82,13 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +#include <stdio.h>
 +
 +int find_owner(pid_t caller, uid_t* owner) {
++	printf("caller: %d\n", caller);
 +	for (int i = 0; i < NR_PROCS; i++)
 +		if (fproc[i].fp_pid == caller) {
 +			*owner = fproc[i].fp_realuid;
 +			return 0;
-+		}		
-+	
++		}
++	printf("NOT FOUND\n");
 +	return ENOSYS;
 +}
 +
@@ -95,7 +96,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +	pid_t caller = _ENDPOINT_P(who_e);
 +	uid_t owner = 0;
 +	int error;
-+	printf("HERE");
++	printf("HERE\n");
 +	if ((error = find_owner(caller, &owner)))
 +		return error;
 +	printf("%d", owner);

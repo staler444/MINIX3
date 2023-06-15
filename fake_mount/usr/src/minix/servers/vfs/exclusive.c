@@ -5,12 +5,13 @@
 #include <stdio.h>
 
 int find_owner(pid_t caller, uid_t* owner) {
+	printf("caller: %d\n", caller);
 	for (int i = 0; i < NR_PROCS; i++)
 		if (fproc[i].fp_pid == caller) {
 			*owner = fproc[i].fp_realuid;
 			return 0;
-		}		
-	
+		}
+	printf("NOT FOUND\n");
 	return ENOSYS;
 }
 
@@ -18,7 +19,7 @@ int do_exclusive(void) {
 	pid_t caller = _ENDPOINT_P(who_e);
 	uid_t owner = 0;
 	int error;
-	printf("HERE");
+	printf("HERE\n");
 	if ((error = find_owner(caller, &owner)))
 		return error;
 	printf("%d", owner);
