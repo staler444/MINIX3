@@ -388,7 +388,7 @@ static int sef_cb_init_fresh(int UNUSED(type), sef_init_info_t *info)
 	FALSE /*use_spare*/);
 
   /* init locked files counter */
-  ex_locked = 0;
+  excl_locked_count = 0;
 
   return(OK);
 }
