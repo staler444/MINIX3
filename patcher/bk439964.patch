@@ -199,8 +199,17 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/vnode.c fake_mount/usr/src/mi
  
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/vnode.h fake_mount/usr/src/minix/servers/vfs/vnode.h
 --- old_mount/usr/src/minix/servers/vfs/vnode.h	2023-06-15 20:02:39.812275138 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/vnode.h	2023-06-17 17:26:11.063649760 +0200
-@@ -20,6 +20,11 @@ EXTERN struct vnode {
++++ fake_mount/usr/src/minix/servers/vfs/vnode.h	2023-06-17 18:08:26.618152065 +0200
+@@ -1,6 +1,8 @@
+ #ifndef __VFS_VNODE_H__
+ #define __VFS_VNODE_H__
+ 
++#include <stdbool.h>
++
+ EXTERN struct vnode {
+   endpoint_t v_fs_e;            /* FS process' endpoint number */
+   endpoint_t v_mapfs_e;		/* mapped FS process' endpoint number */
+@@ -20,6 +22,11 @@ EXTERN struct vnode {
    dev_t v_sdev;                 /* device number for special files */
    struct vmnt *v_vmnt;          /* vmnt object of the partition */
    tll_t v_lock;			/* three-level-lock */
