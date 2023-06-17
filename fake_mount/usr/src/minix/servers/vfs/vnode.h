@@ -20,6 +20,11 @@ EXTERN struct vnode {
   dev_t v_sdev;                 /* device number for special files */
   struct vmnt *v_vmnt;          /* vmnt object of the partition */
   tll_t v_lock;			/* three-level-lock */
+
+  bool ex_lock;                 /* indicator if file was locked via VFS_EXCLUSIVE/VFS_FEXCLUSIVE */
+  uid_t ex_caller;              /* user who locked file */
+  bool ex_moved;                /* whether file was moved after VFS_EXCLUSIVE call */
+  int ex_fd_locker;             /* file desc. locking file, (if locked by VFS_EXCLUSIVE) */
 } vnode[NR_VNODES];
 
 /* vnode lock types mapping */

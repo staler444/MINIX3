@@ -27,5 +27,6 @@ int do_exclusive(void) {
 }
 
 int do_fexclusive(void) {
+	uid_t owner;
 	return(ENOSYS);  // TODO: implementacja VFS_FEXCLUSIVE
 }

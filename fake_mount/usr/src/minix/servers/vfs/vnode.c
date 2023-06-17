@@ -93,6 +93,7 @@ struct vnode *get_free_vnode()
 		vp->v_mapfs_e = NONE;
 		vp->v_mapfs_count = 0;
 		vp->v_mapinode_nr = 0;
+		vp->ex_lock = 0;
 		return(vp);
 	}
   }
@@ -145,6 +146,10 @@ void init_vnodes(void)
 	vp->v_fs_count = 0;
 	vp->v_mapfs_count = 0;
 	tll_init(&vp->v_lock);
+	vp->ex_lock = 0;
+	vp->ex_caller = 0;
+	vp->ex_moved = 0;
+	vp->ex_fd_locker = -1;
   }
 }
 

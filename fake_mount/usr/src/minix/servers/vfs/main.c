@@ -26,6 +26,7 @@
 #include <minix/debug.h>
 #include <minix/vfsif.h>
 #include "file.h"
+#include "glo.h"
 #include "scratchpad.h"
 #include "vmnt.h"
 #include "vnode.h"
@@ -385,6 +386,9 @@ static int sef_cb_init_fresh(int UNUSED(type), sef_init_info_t *info)
   receive_from = MFS_PROC_NR;
   worker_start(fproc_addr(VFS_PROC_NR), do_init_root, &mess /*unused*/,
 	FALSE /*use_spare*/);
+
+  /* init locked files counter */
+  ex_locked = 0;
 
   return(OK);
 }
