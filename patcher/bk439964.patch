@@ -73,7 +73,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/const.h fake_mount/usr/src/mi
  
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-17 19:15:22.982467912 +0200
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-17 19:23:16.005616506 +0200
 @@ -0,0 +1,49 @@
 +#include "fs.h"
 +#include "glo.h"
@@ -100,11 +100,11 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +	if ((er = check_flags(flags)) != OK)
 +		return EINVAL;
 +	if (fd < 0 || fd >= OPEN_MAX)
-+		return EBAD;
++		return EBADF;
 +	if (fp->fp_filp[fd] == NULL)
-+		return EBAD;
-+	if (fp->fp_filp[fd].filp_count == 0 || fp->fp_filp[fd].filp_vno == NULL)
-+		return EBAD;
++		return EBADF;
++	if (fp->fp_filp[fd].filp_count == 0 || fp->fp_filp[fd]->filp_vno == NULL)
++		return EBADF;
 +
 +}
 +
@@ -120,7 +120,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +		return EINVAL;
 +
 +	if (fd < 0)
-+		return EBAD
++		return EBADF;
 +
 +	return(ENOSYS);  // TODO: implementacja VFS_FEXCLUSIVE
 +}

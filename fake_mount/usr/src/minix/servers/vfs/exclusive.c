@@ -23,11 +23,11 @@ int check_input_fexclusive(int fd, int flags) {
 	if ((er = check_flags(flags)) != OK)
 		return EINVAL;
 	if (fd < 0 || fd >= OPEN_MAX)
-		return EBAD;
+		return EBADF;
 	if (fp->fp_filp[fd] == NULL)
-		return EBAD;
-	if (fp->fp_filp[fd].filp_count == 0 || fp->fp_filp[fd].filp_vno == NULL)
-		return EBAD;
+		return EBADF;
+	if (fp->fp_filp[fd].filp_count == 0 || fp->fp_filp[fd]->filp_vno == NULL)
+		return EBADF;
 
 }
 
@@ -43,7 +43,7 @@ int do_fexclusive(void) {
 		return EINVAL;
 
 	if (fd < 0)
-		return EBAD
+		return EBADF;
 
 	return(ENOSYS);  // TODO: implementacja VFS_FEXCLUSIVE
 }
