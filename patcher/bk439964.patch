@@ -104,8 +104,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 23:37:46.223422784 +0200
-@@ -0,0 +1,239 @@
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 23:45:39.436992418 +0200
+@@ -0,0 +1,238 @@
 +#include "fs.h"
 +#include "file.h"
 +#include "tll.h"
@@ -113,7 +113,6 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +#include "lookup.h"
 +#include <minix/endpoint.h>
 +#include <minix/vfsif.h>
-+#include <sys/types.h>
 +#include <sys/fcntl.h>
 +#include <stdio.h>
 +
@@ -334,8 +333,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +	if ((fil = get_filp(fd, TLL_READ)) == NULL)
 +		return EBADF;
 +
-+	if ((r = forbidden(fp, fp->file_vno,R_BIT) != OK) &&
-+		(r = forbidden(fp, fp->file_vno, W_BIT) != OK))
++	if ((r = forbidden(fp, fil->filp_vno,R_BIT) != OK) &&
++		(r = forbidden(fp, fil->filp_vno, W_BIT) != OK))
 +	{
 +		r = EBADF;
 +	}

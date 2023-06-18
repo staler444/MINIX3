@@ -5,7 +5,6 @@
 #include "lookup.h"
 #include <minix/endpoint.h>
 #include <minix/vfsif.h>
-#include <sys/types.h>
 #include <sys/fcntl.h>
 #include <stdio.h>
 
@@ -226,8 +225,8 @@ int do_fexclusive(void) {
 	if ((fil = get_filp(fd, TLL_READ)) == NULL)
 		return EBADF;
 
-	if ((r = forbidden(fp, fp->file_vno,R_BIT) != OK) &&
-		(r = forbidden(fp, fp->file_vno, W_BIT) != OK))
+	if ((r = forbidden(fp, fil->filp_vno,R_BIT) != OK) &&
+		(r = forbidden(fp, fil->filp_vno, W_BIT) != OK))
 	{
 		r = EBADF;
 	}
