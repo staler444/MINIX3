@@ -1,3 +1,5 @@
+#include "const.h"
+#include "excl_lock.h"
 #include "fs.h"
 #include "file.h"
 #include <minix/com.h>
@@ -14,12 +16,21 @@
 #define NOT_OK -1
 
 #define locked_by(vp, lc) ((lc->info&EXCL_LOCKED) && lc->dev == vp->v_dev && lc->inode_nr == vp->v_inode_nr)
-#define drop_lock(lc) ((lc->info = (lc->info & EXCL_LOCKED ? lc->info^EXCL_LOCKED : lc->info))) 
+#define drop_lock(lc) ((lc->info = ((lc->info & EXCL_LOCKED) ? (lc->info^EXCL_LOCKED) : lc->info))) 
 
 #define LOCK_EXCL(lc) if (mutex_lock(&lc->mutex) != 0) { \
 	panic("Unable to obtain mutex on excl_lock");}
 #define UNLOCK_EXCL(lc) if (mutex_unlock(&lc->mutex) != 0) { \
 	panic("Unable to release mutex on excl_lock");}
+
+void printf_occ() {
+	int ile = 0;
+	struct excl_lock* lc;
+	for (lc = &excl_lock[0]; lc < &excl_lock[NR_EXCLUSIVE]; lc++)
+		if (lc->info&EXCL_LOCKED)
+			ile++;
+      printf("Zajete jest %d\n", ile);
+}
 
 
 /* if lock found, return pointer to ALREADY LOCKED excl_lock */
@@ -183,6 +194,7 @@ int do_common(struct vnode* vp, int flags, int fd, int info) {
 }
 
 int do_exclusive(void) {
+	printf_occ();
 	int flags = job_m_in.m_lc_vfs_exclusive.flags;
 	int fd = -1;
 	int info = EXCL_BY_PATH;
@@ -218,6 +230,7 @@ int do_exclusive(void) {
 }
 
 int do_fexclusive(void) {
+	printf_occ();
 	int flags = job_m_in.m_lc_vfs_exclusive.flags;
 	int fd = job_m_in.m_lc_vfs_exclusive.fd;
 	int info = EXCL_BY_FD;
