@@ -104,7 +104,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 20:06:08.328840261 +0200
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 20:08:44.508858072 +0200
 @@ -0,0 +1,199 @@
 +#include "fs.h"
 +#include "threads.h"
@@ -146,7 +146,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +}
 +
 +/* if free spot found, return pointer to ALREADY LOCKED excl_lock */
-+struct excl_lock* get_free_excl_lock(struct vnode* vp) {
++struct excl_lock* get_free_excl_lock(void) {
 +	struct excl_lock* lc;
 +	for (lc = &excl_lock[0]; lc < &excl_lock[NR_EXCLUSIVE]; lc++) {
 +		LOCK_EXCL(lc);
@@ -215,7 +215,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +	return OK;
 +}
 +
-+int do_locking(struct vnode* vp, int flags, int fd, int info) {
++int do_locking(struct vnode* vp, int fd, int info) {
 +	struct excl_lock* lc;
 +
 +	if (find_excl_lock(vp) != NULL) { /* lock already exists */
@@ -243,11 +243,11 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +
 +	switch (flags) {
 +		case EXCL_LOCK:
-+			return do_locking(vp, flags, fd, info);
++			return do_locking(vp, fd, info);
 +		case EXCL_LOCK_NO_OTHERS:
 +			if (check_for_other_users(vp) != OK)
 +				return EAGAIN;
-+			return do_locking(vp, flags, fd, info);
++			return do_locking(vp, fd, info);
 +		case EXCL_UNLOCK:
 +			if ((lc = find_excl_lock(vp)) == NULL)
 +				return EINVAL;

@@ -38,7 +38,7 @@ struct excl_lock* find_excl_lock(struct vnode* vp) {
 }
 
 /* if free spot found, return pointer to ALREADY LOCKED excl_lock */
-struct excl_lock* get_free_excl_lock(struct vnode* vp) {
+struct excl_lock* get_free_excl_lock(void) {
 	struct excl_lock* lc;
 	for (lc = &excl_lock[0]; lc < &excl_lock[NR_EXCLUSIVE]; lc++) {
 		LOCK_EXCL(lc);
@@ -107,7 +107,7 @@ int check_for_other_users(struct vnode* vp) {
 	return OK;
 }
 
-int do_locking(struct vnode* vp, int flags, int fd, int info) {
+int do_locking(struct vnode* vp, int fd, int info) {
 	struct excl_lock* lc;
 
 	if (find_excl_lock(vp) != NULL) { /* lock already exists */
@@ -135,11 +135,11 @@ int do_common(struct vnode* vp, int flags, int fd, int info) {
 
 	switch (flags) {
 		case EXCL_LOCK:
-			return do_locking(vp, flags, fd, info);
+			return do_locking(vp, fd, info);
 		case EXCL_LOCK_NO_OTHERS:
 			if (check_for_other_users(vp) != OK)
 				return EAGAIN;
-			return do_locking(vp, flags, fd, info);
+			return do_locking(vp, fd, info);
 		case EXCL_UNLOCK:
 			if ((lc = find_excl_lock(vp)) == NULL)
 				return EINVAL;
