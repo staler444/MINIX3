@@ -76,10 +76,9 @@ int do_link(void)
   else
 	r = forbidden(fp, dirp, W_BIT | X_BIT);
 
-  if (r == OK) {
+  if (r == OK)
 	r = req_link(vp->v_fs_e, dirp->v_inode_nr, fullpath,
 		     vp->v_inode_nr);
-  }
 
   unlock_vnode(vp);
   unlock_vnode(dirp);
@@ -154,8 +153,10 @@ int do_unlink(void)
 	unlock_vnode(dirp);
 	unlock_vmnt(vmp);
 	put_vnode(dirp);
-	unlock_vnode(vp);
-	put_vnode(vp);
+	if (vp != NULL) {
+		unlock_vnode(vp);
+		put_vnode(vp);
+	}
 	return(r);
   }
 
@@ -171,9 +172,10 @@ int do_unlink(void)
 
   if (r == OK)
 	excl_mark_as_moved(vp);
-
-  unlock_vnode(vp);
-  put_vnode(vp);
+  if (vp != NULL) {
+	unlock_vnode(vp);
+	put_vnode(vp);
+  }
   return(r);
 }
 
@@ -228,8 +230,10 @@ int do_rename(void)
 	unlock_vnode(old_dirp);
 	unlock_vmnt(oldvmp);
 	put_vnode(old_dirp);
-	unlock_vnode(vp);
-	put_vnode(vp);
+	if (vp != NULL) {
+		unlock_vnode(vp);
+		put_vnode(vp);
+	}
 	return(r);
   }
 
@@ -238,8 +242,10 @@ int do_rename(void)
 	unlock_vnode(old_dirp);
 	unlock_vmnt(oldvmp);
 	put_vnode(old_dirp);
-	unlock_vnode(vp);
-	put_vnode(vp);
+	if (vp != NULL) {
+		unlock_vnode(vp);
+		put_vnode(vp);
+	}
 	return(ENAMETOOLONG);
   }
   strlcpy(old_name, fullpath, PATH_MAX);
@@ -262,8 +268,10 @@ int do_rename(void)
 	unlock_vnode(old_dirp);
 	unlock_vmnt(oldvmp);
 	put_vnode(old_dirp);
-	unlock_vnode(vp);
-	put_vnode(vp);
+	if (vp != NULL) {
+		unlock_vnode(vp);
+		put_vnode(vp);
+	}
 	return(r);
   }
 
@@ -306,8 +314,10 @@ int do_rename(void)
 
   put_vnode(old_dirp);
   put_vnode(new_dirp);
-  unlock_vnode(vp);
-  put_vnode(vp);
+  if (vp != NULL) {
+	unlock_vnode(vp);
+	put_vnode(vp);
+  }
 
 
   return(r);
