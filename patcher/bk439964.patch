@@ -220,12 +220,12 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +}
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/fs.h fake_mount/usr/src/minix/servers/vfs/fs.h
 --- old_mount/usr/src/minix/servers/vfs/fs.h	2023-06-15 20:02:39.805608345 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/fs.h	2023-06-17 21:34:33.796235496 +0200
++++ fake_mount/usr/src/minix/servers/vfs/fs.h	2023-06-18 09:59:58.997187359 +0200
 @@ -35,5 +35,6 @@
  #include "type.h"
  #include "vmnt.h"
  #include "fproc.h"
-+#include "exlc_lock.h"
++#include "excl_lock.h"
  
  #endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/main.c fake_mount/usr/src/minix/servers/vfs/main.c

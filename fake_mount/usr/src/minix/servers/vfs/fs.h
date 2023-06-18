@@ -35,6 +35,6 @@
 #include "type.h"
 #include "vmnt.h"
 #include "fproc.h"
-#include "exlc_lock.h"
+#include "excl_lock.h"
 
 #endif
