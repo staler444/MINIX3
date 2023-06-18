@@ -543,7 +543,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/mount.c fake_mount/usr/src/mi
  	unlock_vmnt(vmp);
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/open.c fake_mount/usr/src/minix/servers/vfs/open.c
 --- old_mount/usr/src/minix/servers/vfs/open.c	2023-06-15 20:02:39.808941742 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/open.c	2023-06-18 22:08:14.058331281 +0200
++++ fake_mount/usr/src/minix/servers/vfs/open.c	2023-06-18 22:12:49.631259689 +0200
 @@ -18,6 +18,7 @@
  #include <minix/com.h>
  #include <minix/u64.h>
@@ -557,7 +557,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/open.c fake_mount/usr/src/min
    /* Only do the normal open code if we didn't just create the file. */
    if (exist) {
 +	/* check for excl_lock */
-+	if (excl_perm_check(vp, fp->fp_readluid) != EXCL_OK)
++	if (excl_perm_check(vp, fp->fp_realuid) != EXCL_OK)
 +		r = EACCES;
  	/* Check protections. */
 -	if ((r = forbidden(fp, vp, bits)) == OK) {

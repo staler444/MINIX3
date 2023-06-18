@@ -143,7 +143,7 @@ int common_open(char path[PATH_MAX], int oflags, mode_t omode)
   /* Only do the normal open code if we didn't just create the file. */
   if (exist) {
 	/* check for excl_lock */
-	if (excl_perm_check(vp, fp->fp_readluid) != EXCL_OK)
+	if (excl_perm_check(vp, fp->fp_realuid) != EXCL_OK)
 		r = EACCES;
 	/* Check protections. */
 	else if ((r = forbidden(fp, vp, bits)) == OK)
