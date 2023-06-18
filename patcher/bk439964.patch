@@ -104,9 +104,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 23:25:14.257450234 +0200
-@@ -0,0 +1,240 @@
-+#include "excl_lock.h"
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 23:37:46.223422784 +0200
+@@ -0,0 +1,239 @@
 +#include "fs.h"
 +#include "file.h"
 +#include "tll.h"
@@ -358,7 +357,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/fs.h fake_mount/usr/src/minix
  #endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/minix/servers/vfs/link.c
 --- old_mount/usr/src/minix/servers/vfs/link.c	2023-06-15 20:02:39.805608345 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/link.c	2023-06-18 23:35:39.457388120 +0200
++++ fake_mount/usr/src/minix/servers/vfs/link.c	2023-06-18 23:38:04.513812712 +0200
 @@ -20,7 +20,10 @@
  #include <sys/dirent.h>
  #include <assert.h>
