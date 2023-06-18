@@ -110,7 +110,7 @@ int check_for_other_users(struct vnode* vp) {
 int do_locking(struct vnode* vp, int fd, int info) {
 	struct excl_lock* lc;
 
-	if (find_excl_lock(vp) != NULL) { /* lock already exists */
+	if ((lc = find_excl_lock(vp)) != NULL) { /* lock already exists */
 		UNLOCK_EXCL(lc);
 		return EALREADY;
 	}

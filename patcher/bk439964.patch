@@ -104,7 +104,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 20:08:44.508858072 +0200
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 20:11:23.142251980 +0200
 @@ -0,0 +1,199 @@
 +#include "fs.h"
 +#include "threads.h"
@@ -218,7 +218,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +int do_locking(struct vnode* vp, int fd, int info) {
 +	struct excl_lock* lc;
 +
-+	if (find_excl_lock(vp) != NULL) { /* lock already exists */
++	if ((lc = find_excl_lock(vp)) != NULL) { /* lock already exists */
 +		UNLOCK_EXCL(lc);
 +		return EALREADY;
 +	}
