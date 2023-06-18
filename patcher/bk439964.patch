@@ -104,10 +104,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-19 01:08:52.774294007 +0200
-@@ -0,0 +1,253 @@
-+#include "const.h"
-+#include "excl_lock.h"
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-19 01:10:53.696550183 +0200
+@@ -0,0 +1,251 @@
 +#include "fs.h"
 +#include "file.h"
 +#include <minix/com.h>
