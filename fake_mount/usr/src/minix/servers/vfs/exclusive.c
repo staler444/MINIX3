@@ -21,16 +21,6 @@
 #define UNLOCK_EXCL(lc) if (mutex_unlock(&lc->mutex) != 0) { \
 	panic("Unable to release mutex on excl_lock");}
 
-void printf_occ() {
-	int ile = 0;
-	struct excl_lock* lc;
-	for (lc = &excl_lock[0]; lc < &excl_lock[NR_EXCLUSIVE]; lc++)
-		if (lc->info&EXCL_LOCKED)
-			ile++;
-      printf("Zajete jest %d\n", ile);
-}
-
-
 /* if lock found, return pointer to ALREADY LOCKED excl_lock */
 struct excl_lock* find_excl_lock(struct vnode* vp) {
 	struct excl_lock* lc;
@@ -192,7 +182,6 @@ int do_common(struct vnode* vp, int flags, int fd, int info) {
 }
 
 int do_exclusive(void) {
-	printf_occ();
 	int flags = job_m_in.m_lc_vfs_exclusive.flags;
 	int fd = -1;
 	int info = EXCL_BY_PATH;
@@ -228,7 +217,6 @@ int do_exclusive(void) {
 }
 
 int do_fexclusive(void) {
-	printf_occ();
 	int flags = job_m_in.m_lc_vfs_exclusive.flags;
 	int fd = job_m_in.m_lc_vfs_exclusive.fd;
 	int info = EXCL_BY_FD;

@@ -104,8 +104,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-19 01:24:50.722860377 +0200
-@@ -0,0 +1,251 @@
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-19 01:30:45.943278145 +0200
+@@ -0,0 +1,239 @@
 +#include "fs.h"
 +#include "file.h"
 +#include <minix/com.h>
@@ -128,16 +128,6 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +	panic("Unable to obtain mutex on excl_lock");}
 +#define UNLOCK_EXCL(lc) if (mutex_unlock(&lc->mutex) != 0) { \
 +	panic("Unable to release mutex on excl_lock");}
-+
-+void printf_occ() {
-+	int ile = 0;
-+	struct excl_lock* lc;
-+	for (lc = &excl_lock[0]; lc < &excl_lock[NR_EXCLUSIVE]; lc++)
-+		if (lc->info&EXCL_LOCKED)
-+			ile++;
-+      printf("Zajete jest %d\n", ile);
-+}
-+
 +
 +/* if lock found, return pointer to ALREADY LOCKED excl_lock */
 +struct excl_lock* find_excl_lock(struct vnode* vp) {
@@ -300,7 +290,6 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +}
 +
 +int do_exclusive(void) {
-+	printf_occ();
 +	int flags = job_m_in.m_lc_vfs_exclusive.flags;
 +	int fd = -1;
 +	int info = EXCL_BY_PATH;
@@ -336,7 +325,6 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +}
 +
 +int do_fexclusive(void) {
-+	printf_occ();
 +	int flags = job_m_in.m_lc_vfs_exclusive.flags;
 +	int fd = job_m_in.m_lc_vfs_exclusive.fd;
 +	int info = EXCL_BY_FD;
