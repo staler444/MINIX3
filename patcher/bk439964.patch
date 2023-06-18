@@ -104,8 +104,9 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-19 01:10:53.696550183 +0200
-@@ -0,0 +1,251 @@
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-19 01:15:44.285443480 +0200
+@@ -0,0 +1,252 @@
++#include "excl_lock.h"
 +#include "fs.h"
 +#include "file.h"
 +#include <minix/com.h>
@@ -252,7 +253,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +	lc->owner = fp->fp_realuid;
 +	lc->caller_p = fp->fp_pid;
 +	lc->fd = fd;
-+	lc->info = info;
++	lc->info = info&EXCL_LOCKED;
 +	lc->inode_nr = vp->v_inode_nr;
 +	lc->dev = vp->v_dev;
 +
