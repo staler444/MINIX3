@@ -5,10 +5,6 @@
  * Slot free if (info & EXCL_LOCKED) == false
  */
 
-#include "const.h"
-#include "threads.h"
-#include <sys/types.h>
-
 EXTERN struct excl_lock {
   mutex_t mutex; 
   ino_t inode_nr;

@@ -73,18 +73,14 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/const.h fake_mount/usr/src/mi
  
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/src/minix/servers/vfs/excl_lock.h
 --- old_mount/usr/src/minix/servers/vfs/excl_lock.h	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/excl_lock.h	2023-06-18 19:50:55.858784576 +0200
-@@ -0,0 +1,31 @@
++++ fake_mount/usr/src/minix/servers/vfs/excl_lock.h	2023-06-18 19:59:44.287200711 +0200
+@@ -0,0 +1,27 @@
 +#ifndef __VFS_EXCL_LOCK_H__
 +#define __VFS_EXCL_LOCK_H__
 +
 +/* This is the exclusive lock table.
 + * Slot free if (info & EXCL_LOCKED) == false
 + */
-+
-+#include "const.h"
-+#include "threads.h"
-+#include <sys/types.h>
 +
 +EXTERN struct excl_lock {
 +  mutex_t mutex; 
@@ -322,7 +318,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/fs.h fake_mount/usr/src/minix
  #endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/minix/servers/vfs/link.c
 --- old_mount/usr/src/minix/servers/vfs/link.c	2023-06-15 20:02:39.805608345 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/link.c	2023-06-18 19:44:59.867276021 +0200
++++ fake_mount/usr/src/minix/servers/vfs/link.c	2023-06-18 20:00:28.024819810 +0200
 @@ -20,7 +20,10 @@
  #include <sys/dirent.h>
  #include <assert.h>
