@@ -144,7 +144,7 @@ int do_locking(struct vnode* vp, int fd, int info) {
 	lc->owner = fp->fp_realuid;
 	lc->caller_p = fp->fp_pid;
 	lc->fd = fd;
-	lc->info = info&EXCL_LOCKED;
+	lc->info = info|EXCL_LOCKED;
 	lc->inode_nr = vp->v_inode_nr;
 	lc->dev = vp->v_dev;
 
