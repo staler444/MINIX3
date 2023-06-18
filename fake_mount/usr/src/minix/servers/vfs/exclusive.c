@@ -1,4 +1,3 @@
-#include "excl_lock.h"
 #include "fs.h"
 #include "file.h"
 #include <minix/com.h>
