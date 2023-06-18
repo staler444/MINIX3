@@ -99,7 +99,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 10:46:05.144033723 +0200
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 10:48:50.866378311 +0200
 @@ -0,0 +1,117 @@
 +#include "fs.h"
 +#include "const.h"
@@ -146,7 +146,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +		for (int j = 0; j < OPEN_MAX; i++)
 +			if (fproc[i].fp_realuid == caller &&
 +				fproc[i].fp_filp[j] != NULL &&
-+				fproc[i].fp_filp[j]->filp_vp == vp)
++				fproc[i].fp_filp[j]->filp_vno == vp)
 +			{
 +				return NOT_OK;
 +			}
