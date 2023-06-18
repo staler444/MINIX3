@@ -104,16 +104,12 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 20:23:25.757517074 +0200
-@@ -0,0 +1,200 @@
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 22:18:39.225710060 +0200
+@@ -0,0 +1,197 @@
 +#include "fs.h"
-+#include "threads.h"
-+#include "const.h"
 +#include "file.h"
-+#include "glo.h"
-+#include "proto.h"
++#include "tll.h"
 +#include "vnode.h"
-+#include "fproc.h"
 +#include <minix/endpoint.h>
 +#include <minix/vfsif.h>
 +#include <sys/types.h>
@@ -295,6 +291,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +		return EBADF;
 +	}
 +
++	   printf("CHUJ1");
 +	/* check for r/w permission only if locking file */
 +	if (!(fil->filp_mode & (R_BIT|W_BIT)) && 
 +	   (flags & (EXCL_LOCK|EXCL_LOCK_NO_OTHERS)))

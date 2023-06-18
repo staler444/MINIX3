@@ -1,11 +1,7 @@
 #include "fs.h"
-#include "threads.h"
-#include "const.h"
 #include "file.h"
-#include "glo.h"
-#include "proto.h"
+#include "tll.h"
 #include "vnode.h"
-#include "fproc.h"
 #include <minix/endpoint.h>
 #include <minix/vfsif.h>
 #include <sys/types.h>
@@ -187,6 +183,7 @@ int do_fexclusive(void) {
 		return EBADF;
 	}
 
+	   printf("CHUJ1");
 	/* check for r/w permission only if locking file */
 	if (!(fil->filp_mode & (R_BIT|W_BIT)) && 
 	   (flags & (EXCL_LOCK|EXCL_LOCK_NO_OTHERS)))
