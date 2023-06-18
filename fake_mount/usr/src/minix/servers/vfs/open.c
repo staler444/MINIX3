@@ -9,7 +9,9 @@
  *   do_lseek:  perform the LSEEK system call
  */
 
+#include "excl_lock.h"
 #include "fs.h"
+#include <asm-generic/errno-base.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
@@ -18,6 +20,7 @@
 #include <minix/com.h>
 #include <minix/u64.h>
 #include "file.h"
+#include "proto.h"
 #include "scratchpad.h"
 #include "lock.h"
 #include <sys/dirent.h>
@@ -141,9 +144,11 @@ int common_open(char path[PATH_MAX], int oflags, mode_t omode)
 
   /* Only do the normal open code if we didn't just create the file. */
   if (exist) {
+	/* check for excl_lock */
+	if (excl_perm_check(vp, fp->fp_readluid) != EXCL_OK)
+		r = EACCES;
 	/* Check protections. */
-	if ((r = forbidden(fp, vp, bits)) == OK && 
-	     excl_perm_check(vp, fp->fp_realuid) == EXCL_OK)
+	else if ((r = forbidden(fp, vp, bits)) == OK)
 	{
 		/* Opening reg. files, directories, and special files differ */
 		switch (vp->v_mode & S_IFMT) {

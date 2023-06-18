@@ -12,6 +12,7 @@
  */
 
 #include "fs.h"
+#include <asm-generic/errno-base.h>
 #include <sys/stat.h>
 #include <string.h>
 #include <minix/com.h>
@@ -262,6 +263,22 @@ int do_rename(void)
   /* Parent dirs must be writable, searchable and on a writable device */
   if ((r1 = forbidden(fp, old_dirp, W_BIT|X_BIT)) != OK ||
       (r1 = forbidden(fp, new_dirp, W_BIT|X_BIT)) != OK) r = r1;
+
+  /* check whether name2 file isnt blocked */
+  struct vnode* vno_pom;
+  struct vmnt* vm_pom;
+  
+  lookup_init(&resolve, fullpath, PATH_NOFLAGS, &vm_pom, &vno_pom);
+  resolve.l_vmnt_lock = VMNT_READ;
+  resolve.l_vnode_lock = VNODE_READ;
+  if ((vno_pom = eat_path(&resolve, fp)) != NULL) {
+	/* perform excl_lock perm check */
+	if (excl_perm_check(vno_pom, fp->fp_realuid))
+		r = EACCES;
+	unlock_vnode(vno_pom);
+	unlock_vmnt(vm_pom);
+	put_vnode(vno_pom);
+  }
 
   if (r == OK) {
 	upgrade_vmnt_lock(oldvmp); /* Upgrade to exclusive access */

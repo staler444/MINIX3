@@ -187,7 +187,6 @@ int do_fexclusive(void) {
 		return EBADF;
 	}
 
-	printf("CHUJ1");
 	/* check for r/w permission only if locking file */
 	if (!(fil->filp_mode & (R_BIT|W_BIT)) && 
 	   (flags & (EXCL_LOCK|EXCL_LOCK_NO_OTHERS)))
@@ -195,7 +194,6 @@ int do_fexclusive(void) {
 		unlock_filp(fil);
 		return EBADF;
 	}
-	printf("CHUJ2");
 	int r = do_common(fil->filp_vno, flags, fd, info);
 	unlock_filp(fil);
 	return r;
