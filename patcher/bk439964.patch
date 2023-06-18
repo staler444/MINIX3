@@ -104,8 +104,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 20:11:23.142251980 +0200
-@@ -0,0 +1,199 @@
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 20:20:58.794481821 +0200
+@@ -0,0 +1,202 @@
 +#include "fs.h"
 +#include "threads.h"
 +#include "const.h"
@@ -294,6 +294,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +		unlock_filp(fil);
 +		return EBADF;
 +	}
++
++	printf("CHUJ1");
 +	/* check for r/w permission only if locking file */
 +	if (!(fil->filp_mode & (R_BIT|W_BIT)) && 
 +	   (flags & (EXCL_LOCK|EXCL_LOCK_NO_OTHERS)))
@@ -301,6 +303,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +		unlock_filp(fil);
 +		return EBADF;
 +	}
++	printf("CHUJ2");
 +	int r = do_common(fil->filp_vno, flags, fd, info);
 +	unlock_filp(fil);
 +	return r;
