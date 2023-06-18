@@ -318,7 +318,7 @@ void upgrade_vnode_lock(struct vnode *vp);
 /* write.c */
 int do_write(void);
 
-/* gcov.c *
+/* gcov.c */
 int do_gcov_flush(void);
 #if ! USE_COVERAGE
 #define do_gcov_flush NULL
