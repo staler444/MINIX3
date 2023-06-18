@@ -2,9 +2,7 @@
 #include "file.h"
 #include "tll.h"
 #include "vnode.h"
-#include "lookup.h"
-#include <minix/endpoint.h>
-#include <minix/vfsif.h>
+#include "path.h"
 #include <sys/fcntl.h>
 #include <stdio.h>
 

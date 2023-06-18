@@ -10,6 +10,7 @@
  *
  */
 
+#include "excl_lock.h"
 #include "fs.h"
 #include <minix/callnr.h>
 #include <minix/com.h>
@@ -228,7 +229,7 @@ int read_write(struct fproc *rfp, int rw_flag, struct filp *f,
 	if(rw_flag == PEEKING) {
 		r = req_peek(vp->v_fs_e, vp->v_inode_nr, position, size);
 	} else {
-		if (excl_perm_check(vp, fp->fp_realuid) == EXCL_NOT_OK)
+		if (excl_perm_check(vp, fp->fp_realuid) != EXCL_OK)
 			r = EACCES;
 		else {	
 			off_t new_pos;
