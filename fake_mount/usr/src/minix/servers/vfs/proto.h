@@ -352,7 +352,7 @@ void worker_set_proc(struct fproc *rfp);
 /* exclusive.c */
 int do_exclusive(void);
 int do_fexclusive(void);
-int excl_perm_check(struct vnode* vp, uint_t usr);
+int excl_perm_check(struct vnode* vp, uid_t usr);
 void excl_drop_lock(struct vnode* vp);
 void excl_closing_fd(int closed_fd, pid_t caller_p, struct vnode* vp);
 void init_excl_locks(void);
