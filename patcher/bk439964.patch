@@ -555,16 +555,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/open.c fake_mount/usr/src/min
  	lock_count = nr_locks;	/* save count of locks */
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/proto.h fake_mount/usr/src/minix/servers/vfs/proto.h
 --- old_mount/usr/src/minix/servers/vfs/proto.h	2023-06-15 20:02:39.808941742 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/proto.h	2023-06-18 16:23:39.336672869 +0200
-@@ -48,7 +48,7 @@ int do_ioctl(void);
- void lock_dmap(struct dmap *dp);
- void unlock_dmap(struct dmap *dp);
- int do_mapdriver(void);
--void init_dmap(void);
-+void init_dmap(void);prot
- int dmap_driver_match(endpoint_t proc, devmajor_t major);
- void dmap_endpt_up(endpoint_t proc_nr, int is_blk);
- struct dmap *get_dmap(endpoint_t proc_e);
++++ fake_mount/usr/src/minix/servers/vfs/proto.h	2023-06-18 19:31:37.600742651 +0200
 @@ -348,4 +348,13 @@ void worker_wait(void);
  struct worker_thread *worker_suspend(void);
  void worker_resume(struct worker_thread *org_self);

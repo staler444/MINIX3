@@ -48,7 +48,7 @@ int do_ioctl(void);
 void lock_dmap(struct dmap *dp);
 void unlock_dmap(struct dmap *dp);
 int do_mapdriver(void);
-void init_dmap(void);prot
+void init_dmap(void);
 int dmap_driver_match(endpoint_t proc, devmajor_t major);
 void dmap_endpt_up(endpoint_t proc_nr, int is_blk);
 struct dmap *get_dmap(endpoint_t proc_e);
