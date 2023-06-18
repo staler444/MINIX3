@@ -61,6 +61,8 @@ int do_locking(void) {
 	lc->caller_p = who_p;
 	lc->fd = fd;
 	lc->info = info;
+
+	return OK;
 }
 
 int do_common(void) {

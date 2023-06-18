@@ -99,8 +99,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 10:48:50.866378311 +0200
-@@ -0,0 +1,117 @@
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 10:51:45.079972247 +0200
+@@ -0,0 +1,119 @@
 +#include "fs.h"
 +#include "const.h"
 +#include "file.h"
@@ -164,6 +164,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +	lc->caller_p = who_p;
 +	lc->fd = fd;
 +	lc->info = info;
++
++	return OK;
 +}
 +
 +int do_common(void) {
