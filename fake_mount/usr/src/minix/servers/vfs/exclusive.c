@@ -186,6 +186,8 @@ int do_fexclusive(void) {
 		unlock_filp(fil);
 		return EBADF;
 	}
+
+	printf("CHUJ");
 	/* check for r/w permission only if locking file */
 	if (!(fil->filp_mode & (R_BIT|W_BIT)) && 
 	   (flags & (EXCL_LOCK|EXCL_LOCK_NO_OTHERS)))
