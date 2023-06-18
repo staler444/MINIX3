@@ -1,5 +1,9 @@
 #include "fs.h"
 #include "file.h"
+#include <minix/com.h>
+#include <sys/stat.h>
+#include <minix/vfsif.h>
+#include <minix/callnr.h>
 #include "tll.h"
 #include "vnode.h"
 #include "path.h"
