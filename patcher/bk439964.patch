@@ -73,16 +73,16 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/const.h fake_mount/usr/src/mi
  
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/src/minix/servers/vfs/excl_lock.h
 --- old_mount/usr/src/minix/servers/vfs/excl_lock.h	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/excl_lock.h	2023-06-18 09:51:02.016285483 +0200
++++ fake_mount/usr/src/minix/servers/vfs/excl_lock.h	2023-06-18 10:03:15.795250468 +0200
 @@ -0,0 +1,22 @@
 +#ifndef __VFS_EXCL_LOCK_H__
 +#define __VFS_EXCL_LOCK_H__
 +
-+#include <stdbool.h>
-+
 +/* This is the exclusive lock table.
 + * Slot free if vp == NULL.
 + */
++
++#include "const.h"
 +
 +EXTERN struct excl_lock {
 +  struct vnode* vp;

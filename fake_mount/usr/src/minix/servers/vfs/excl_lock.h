@@ -1,11 +1,11 @@
 #ifndef __VFS_EXCL_LOCK_H__
 #define __VFS_EXCL_LOCK_H__
 
-#include <stdbool.h>
-
 /* This is the exclusive lock table.
  * Slot free if vp == NULL.
  */
+
+#include "const.h"
 
 EXTERN struct excl_lock {
   struct vnode* vp;
