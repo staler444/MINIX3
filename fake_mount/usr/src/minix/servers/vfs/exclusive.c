@@ -42,8 +42,8 @@ int check_for_other_users(void) {
 	for (int i = 0; i < NR_PROCS; i++)
 		for (int j = 0; j < OPEN_MAX; i++)
 			if (fproc[i].fp_realuid == caller &&
-				fproc[i].fp_flip[j] != NULL &&
-				fproc[i].fp_flip[j]->filp_vp == vp)
+				fproc[i].fp_filp[j] != NULL &&
+				fproc[i].fp_filp[j]->filp_vp == vp)
 			{
 				return NOT_OK;
 			}
