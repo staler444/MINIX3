@@ -25,8 +25,6 @@
 #include <minix/safecopies.h>
 #include <minix/debug.h>
 #include <minix/vfsif.h>
-#include "file.h"
-#include "glo.h"
 #include "proto.h"
 #include "scratchpad.h"
 #include "vmnt.h"

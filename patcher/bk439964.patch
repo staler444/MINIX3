@@ -104,7 +104,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 23:45:39.436992418 +0200
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 23:48:46.551481440 +0200
 @@ -0,0 +1,238 @@
 +#include "fs.h"
 +#include "file.h"
@@ -583,17 +583,17 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  	/* If the file size does not change, do not make the actual call. This
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/main.c fake_mount/usr/src/minix/servers/vfs/main.c
 --- old_mount/usr/src/minix/servers/vfs/main.c	2023-06-15 20:02:39.805608345 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/main.c	2023-06-18 15:27:30.933312797 +0200
-@@ -26,6 +26,8 @@
++++ fake_mount/usr/src/minix/servers/vfs/main.c	2023-06-18 23:48:33.721178284 +0200
+@@ -25,7 +25,7 @@
+ #include <minix/safecopies.h>
  #include <minix/debug.h>
  #include <minix/vfsif.h>
- #include "file.h"
-+#include "glo.h"
+-#include "file.h"
 +#include "proto.h"
  #include "scratchpad.h"
  #include "vmnt.h"
  #include "vnode.h"
-@@ -380,6 +382,7 @@ static int sef_cb_init_fresh(int UNUSED(
+@@ -380,6 +380,7 @@ static int sef_cb_init_fresh(int UNUSED(
    init_select();		/* init select() structures */
    init_filps();			/* Init filp structures */
    mount_pfs();			/* mount Pipe File Server */
