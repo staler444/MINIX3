@@ -23,6 +23,7 @@
 #include <assert.h>
 #include "file.h"
 #include <minix/vfsif.h>
+#include "proto.h"
 #include "vnode.h"
 #include "vmnt.h"
 #include "path.h"
@@ -480,11 +481,14 @@ int unmount(
   /* See if the mounted device is busy.  Only 1 vnode using it should be
    * open -- the root vnode -- and that inode only 1 time. */
   locks = count = 0;
-  for (vp = &vnode[0]; vp < &vnode[NR_VNODES]; vp++)
+  for (vp = &vnode[0]; vp < &vnode[NR_VNODES]; vp++) {
 	  if (vp->v_ref_count > 0 && vp->v_dev == dev) {
 		count += vp->v_ref_count;
 		if (is_vnode_locked(vp)) locks++;
 	  }
+	  /* try droping excl_locks */
+	  excl_drop_lock(vp);
+  }
 
   if (count > 1 || locks > 1 || tll_haspendinglock(&vmp->m_lock)) {
 	unlock_vmnt(vmp);

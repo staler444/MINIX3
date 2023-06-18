@@ -1,8 +1,6 @@
 #ifndef __VFS_VNODE_H__
 #define __VFS_VNODE_H__
 
-#include <stdbool.h>
-
 EXTERN struct vnode {
   endpoint_t v_fs_e;            /* FS process' endpoint number */
   endpoint_t v_mapfs_e;		/* mapped FS process' endpoint number */

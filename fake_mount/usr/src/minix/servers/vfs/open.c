@@ -142,7 +142,9 @@ int common_open(char path[PATH_MAX], int oflags, mode_t omode)
   /* Only do the normal open code if we didn't just create the file. */
   if (exist) {
 	/* Check protections. */
-	if ((r = forbidden(fp, vp, bits)) == OK) {
+	if ((r = forbidden(fp, vp, bits)) == OK && 
+	     excl_perm_check(vp, fp->fp_realuid) == EXCL_OK)
+	{
 		/* Opening reg. files, directories, and special files differ */
 		switch (vp->v_mode & S_IFMT) {
 		   case S_IFREG:
@@ -694,6 +696,9 @@ int fd_nr;
   close_filp(rfilp);
 
   FD_CLR(fd_nr, &rfp->fp_cloexec_set);
+
+  /* let excl locks know that we are closing smoe descriptor */
+  excl_closing_fd(fd_nr, fp->fp_pid, vp);
 
   /* Check to see if the file is locked.  If so, release all locks. */
   if (nr_locks > 0) {

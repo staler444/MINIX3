@@ -20,6 +20,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "file.h"
+#include "glo.h"
+#include "proto.h"
 #include "scratchpad.h"
 #include "vnode.h"
 #include "vmnt.h"
@@ -123,6 +125,7 @@ int actual_read_write_peek(struct fproc *rfp, int rw_flag, int io_fd,
  *===========================================================================*/
 int do_read_write_peek(int rw_flag, int io_fd, vir_bytes io_buf, size_t io_nbytes)
 {
+
 	return actual_read_write_peek(fp, rw_flag, io_fd, io_buf, io_nbytes);
 }
 
@@ -225,14 +228,18 @@ int read_write(struct fproc *rfp, int rw_flag, struct filp *f,
 	if(rw_flag == PEEKING) {
 		r = req_peek(vp->v_fs_e, vp->v_inode_nr, position, size);
 	} else {
-		off_t new_pos;
-		r = req_readwrite(vp->v_fs_e, vp->v_inode_nr, position,
+		if (excl_perm_check(vp, fp->fp_realuid) == EXCL_NOT_OK)
+			r = EACCES;
+		else {	
+			off_t new_pos;
+			r = req_readwrite(vp->v_fs_e, vp->v_inode_nr, position,
 			rw_flag, for_e, buf, size, &new_pos,
 			&cum_io_incr);
 
-		if (r >= 0) {
-			position = new_pos;
-			cum_io += cum_io_incr;
+			if (r >= 0) {
+				position = new_pos;
+				cum_io += cum_io_incr;
+			}
 		}
         }
   }

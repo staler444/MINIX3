@@ -9,6 +9,7 @@
  */
 
 #include "fs.h"
+#include "proto.h"
 #include "vnode.h"
 #include "vmnt.h"
 #include "file.h"
@@ -292,6 +293,8 @@ void put_vnode(struct vnode *vp)
   vp->v_fs_count = 0;
   vp->v_ref_count = 0;
   vp->v_mapfs_count = 0;
+
+  excl_drop_lock(vp);
 
   unlock_vnode(vp);
 }

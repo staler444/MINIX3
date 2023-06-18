@@ -48,7 +48,7 @@ int do_ioctl(void);
 void lock_dmap(struct dmap *dp);
 void unlock_dmap(struct dmap *dp);
 int do_mapdriver(void);
-void init_dmap(void);
+void init_dmap(void);prot
 int dmap_driver_match(endpoint_t proc, devmajor_t major);
 void dmap_endpt_up(endpoint_t proc_nr, int is_blk);
 struct dmap *get_dmap(endpoint_t proc_e);
@@ -352,5 +352,9 @@ void worker_set_proc(struct fproc *rfp);
 /* exclusive.c */
 int do_exclusive(void);
 int do_fexclusive(void);
+int excl_perm_check(struct vnode* vp, uint_t usr);
+void excl_drop_lock(struct vnode* vp);
+void excl_closing_fd(int closed_fd, pid_t caller_p, struct vnode* vp);
+void init_excl_locks(void);
 
 #endif

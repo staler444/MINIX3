@@ -19,4 +19,7 @@ EXTERN struct excl_lock {
 #define EXCL_BY_PATH      2 /* file locked by VFS_EXCLUSIVE */
 #define EXCL_MOVED        4 /* file moved after VFS_EXCLUSIVE lock */
 
+#define EXCL_OK           0   /* permission granted */
+#define EXCL_NOT_OK       -1  /* permissions not granted */
+
 #endif

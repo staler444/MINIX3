@@ -27,6 +27,7 @@
 #include <minix/vfsif.h>
 #include "file.h"
 #include "glo.h"
+#include "proto.h"
 #include "scratchpad.h"
 #include "vmnt.h"
 #include "vnode.h"
@@ -381,6 +382,7 @@ static int sef_cb_init_fresh(int UNUSED(type), sef_init_info_t *info)
   init_select();		/* init select() structures */
   init_filps();			/* Init filp structures */
   mount_pfs();			/* mount Pipe File Server */
+  init_excl_locks();		/* init excl_locks structures */
 
   /* Mount initial ramdisk as file system root. */
   receive_from = MFS_PROC_NR;

@@ -11,7 +11,9 @@
  *   do_rdlink:       perform the RDLNK system call
  */
 
+#include "excl_lock.h"
 #include "fs.h"
+#include <asm-generic/errno-base.h>
 #include <sys/stat.h>
 #include <string.h>
 #include <minix/com.h>
@@ -20,7 +22,10 @@
 #include <sys/dirent.h>
 #include <assert.h>
 #include "file.h"
+#include "glo.h"
 #include "path.h"
+#include "proto.h"
+#include "vmnt.h"
 #include "vnode.h"
 #include "scratchpad.h"
 
@@ -100,7 +105,7 @@ int do_unlink(void)
   struct vmnt *vmp, *vmp2;
   int r;
   char fullpath[PATH_MAX];
-  struct lookup resolve, stickycheck;
+  struct lookup resolve, permcheck;
 
   if (copy_path(fullpath, sizeof(fullpath)) != OK)
 	return(err_code);
@@ -128,28 +133,31 @@ int do_unlink(void)
 	return(r);
   }
 
-  /* Also, if the sticky bit is set, only the owner of the file or a privileged
-     user is allowed to unlink */
-  if ((dirp->v_mode & S_ISVTX) == S_ISVTX) {
-	/* Look up inode of file to unlink to retrieve owner */
-	lookup_init(&stickycheck, resolve.l_path, PATH_RET_SYMLINK, &vmp2, &vp);
-	stickycheck.l_vmnt_lock = VMNT_READ;
-	stickycheck.l_vnode_lock = VNODE_READ;
-	vp = advance(dirp, &stickycheck, fp);
-	assert(vmp2 == NULL);
-	if (vp != NULL) {
-		if (vp->v_uid != fp->fp_effuid && fp->fp_effuid != SU_UID)
-			r = EPERM;
-		unlock_vnode(vp);
-		put_vnode(vp);
-	} else
-		r = err_code;
-	if (r != OK) {
-		unlock_vnode(dirp);
-		unlock_vmnt(vmp);
-		put_vnode(dirp);
-		return(r);
-	}
+  /* perform excl perm check and sticky perm check if needed */
+  lookup_init(&permcheck, resolve.l_path, PATH_RET_SYMLINK, &vmp2, &vp);
+  permcheck.l_vmnt_lock = VMNT_READ;
+  permcheck.l_vnode_lock = VNODE_READ;
+  vp = advance(dirp, &permcheck, fp);
+  assert(vmp2 == NULL);
+  if (vp != NULL) {
+	if (excl_perm_check(vp, fp->fp_realuid) != EXCL_OK)
+		r = EACCES;	
+	/* Also, if the sticky bit is set, only the owner of the file or a privileged
+	user is allowed to unlink */
+	if ((dirp->v_mode & S_ISVTX) == S_ISVTX &&
+	   (vp->v_uid != fp->fp_effuid && fp->fp_effuid != SU_UID))
+		r = EPERM;
+	unlock_vnode(vp);
+	put_vnode(vp);
+  }
+  else 
+	r = err_code;
+
+  if (r != OK) {
+	unlock_vnode(dirp);
+	unlock_vmnt(vmp);
+	put_vnode(dirp);
+	return(r);
   }
 
   upgrade_vmnt_lock(vmp);
@@ -175,7 +183,7 @@ int do_rename(void)
   struct vmnt *oldvmp, *newvmp, *vmp2;
   char old_name[PATH_MAX];
   char fullpath[PATH_MAX];
-  struct lookup resolve, stickycheck;
+  struct lookup resolve, permcheck;
   vir_bytes vname1, vname2;
   size_t vname1_length, vname2_length;
 
@@ -193,28 +201,31 @@ int do_rename(void)
   if (fetch_name(vname1, vname1_length, fullpath) != OK) return(err_code);
   if ((old_dirp = last_dir(&resolve, fp)) == NULL) return(err_code);
 
-  /* If the sticky bit is set, only the owner of the file or a privileged
-     user is allowed to rename */
-  if ((old_dirp->v_mode & S_ISVTX) == S_ISVTX) {
-	/* Look up inode of file to unlink to retrieve owner */
-	lookup_init(&stickycheck, resolve.l_path, PATH_RET_SYMLINK, &vmp2, &vp);
-	stickycheck.l_vmnt_lock = VMNT_READ;
-	stickycheck.l_vnode_lock = VNODE_READ;
-	vp = advance(old_dirp, &stickycheck, fp);
-	assert(vmp2 == NULL);
-	if (vp != NULL) {
-		if(vp->v_uid != fp->fp_effuid && fp->fp_effuid != SU_UID)
+  /* perform excl and sticy perm check */
+  lookup_init(&permcheck, resolve.l_path, PATH_RET_SYMLINK, &vmp2, &vp);
+  permcheck.l_vmnt_lock = VMNT_READ;
+  permcheck.l_vnode_lock = VNODE_READ;
+  vp = advance(old_dirp, &permcheck, fp);
+  assert(vmp2 == NULL);
+  if (vp != NULL) {
+	 /* If the sticky bit is set, only the owner of the file or a privileged
+	user is allowed to rename */
+	if ((old_dirp->v_mode & S_ISVTX) == S_ISVTX)
+		if (vp->v_uid != fp->fp_effuid && fp->fp_effuid != SU_UID)
 			r = EPERM;
-		unlock_vnode(vp);
-		put_vnode(vp);
-	} else
-		r = err_code;
-	if (r != OK) {
-		unlock_vnode(old_dirp);
-		unlock_vmnt(oldvmp);
-		put_vnode(old_dirp);
-		return(r);
-	}
+	if (excl_perm_check(vp, fp->fp_realuid) != EXCL_OK)
+		r = EACCES;
+	unlock_vnode(vp);
+	put_vnode(vp);
+  }
+  else 
+	r = err_code;
+
+  if (r != OK) {
+	unlock_vnode(old_dirp);
+	unlock_vmnt(oldvmp);
+	put_vnode(old_dirp);
+	return(r);
   }
 
   /* Save the last component of the old name */
@@ -310,7 +321,9 @@ int do_truncate(void)
 	 * ensures that the file times are retained when the file size remains
 	 * the same, which is a POSIX requirement.
 	 */
-	if (S_ISREG(vp->v_mode) && vp->v_size == length)
+	if (r = excl_perm_check(vp, fp->fp_realuid) != EXCL_OK)
+		r = EACCES;
+	else if (S_ISREG(vp->v_mode) && vp->v_size == length)
 		r = OK;
 	else
 		r = truncate_vnode(vp, length);
@@ -344,7 +357,9 @@ int do_ftruncate(void)
 
   vp = rfilp->filp_vno;
 
-  if (!(rfilp->filp_mode & W_BIT))
+  if (excl_perm_check(vp, fp->fp_realuid) != EXCL_OK)		
+	r = EACCES;
+  else if (!(rfilp->filp_mode & W_BIT))
 	r = EBADF;
   else if (S_ISREG(vp->v_mode) && vp->v_size == length)
 	/* If the file size does not change, do not make the actual call. This
