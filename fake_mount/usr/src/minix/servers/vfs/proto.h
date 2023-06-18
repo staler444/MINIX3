@@ -356,5 +356,7 @@ int excl_perm_check(struct vnode* vp, uid_t usr);
 void excl_drop_lock(struct vnode* vp);
 void excl_closing_fd(int closed_fd, pid_t caller_p, struct vnode* vp);
 void init_excl_locks(void);
+void excl_put_vnode_handler(struct vnode* vp);
+void excl_mark_as_moved(struct vnode* vp);
 
 #endif

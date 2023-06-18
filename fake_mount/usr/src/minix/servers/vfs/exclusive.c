@@ -1,3 +1,4 @@
+#include "excl_lock.h"
 #include "fs.h"
 #include "file.h"
 #include "tll.h"
@@ -61,6 +62,24 @@ int excl_perm_check(struct vnode* vp, uid_t usr) {
 	return EXCL_OK;
 }
 
+void excl_put_vnode_handler(struct vnode* vp) {
+	struct excl_lock* lc;
+	if ((lc = find_excl_lock(vp)) == NULL)
+		return;
+	if (lc->info & EXCL_MOVED)
+		drop_lock(lc);
+	UNLOCK_EXCL(lc);
+}
+
+void excl_mark_as_moved(struct vnode* vp) {
+	struct excl_lock* lc;
+	if ((lc = find_excl_lock(vp)) == NULL)
+		return;
+
+	lc->info |= EXCL_MOVED;
+	UNLOCK_EXCL(lc);
+}
+	
 void excl_drop_lock(struct vnode* vp) {
 	struct excl_lock* lc;
 	for (lc = &excl_lock[0]; lc < &excl_lock[NR_EXCLUSIVE]; lc++) {
@@ -73,7 +92,6 @@ void excl_drop_lock(struct vnode* vp) {
 
 void init_excl_locks(void) {
 	struct excl_lock* lc;
-
 	for (lc = &excl_lock[0]; lc < &excl_lock[NR_EXCLUSIVE]; lc++) {
 		if (mutex_init(&lc->mutex, NULL) != 0)
 			panic("Failed to initialize filp mutex");
@@ -146,6 +164,7 @@ int do_common(struct vnode* vp, int flags, int fd, int info) {
 			}
 			drop_lock(lc);
 			UNLOCK_EXCL(lc);
+			break;
 		case EXCL_UNLOCK_FORCE:
 			if ((lc = find_excl_lock(vp)) == NULL)
 				return EINVAL;
@@ -155,6 +174,7 @@ int do_common(struct vnode* vp, int flags, int fd, int info) {
 			}
 			drop_lock(lc);
 			UNLOCK_EXCL(lc);
+			break;
 		default:
 			return EINVAL;
 	}
@@ -207,7 +227,7 @@ int do_fexclusive(void) {
 	if ((fil = get_filp(fd, TLL_READ)) == NULL)
 		return EBADF;
 
-	if ((r = forbidden(fp, fp->file_vno, R_BIT) != OK) &&
+	if ((r = forbidden(fp, fp->file_vno,R_BIT) != OK) &&
 		(r = forbidden(fp, fp->file_vno, W_BIT) != OK))
 	{
 		r = EBADF;

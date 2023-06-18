@@ -104,8 +104,9 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 23:09:28.187805185 +0200
-@@ -0,0 +1,220 @@
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 23:25:14.257450234 +0200
+@@ -0,0 +1,240 @@
++#include "excl_lock.h"
 +#include "fs.h"
 +#include "file.h"
 +#include "tll.h"
@@ -169,6 +170,24 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +	return EXCL_OK;
 +}
 +
++void excl_put_vnode_handler(struct vnode* vp) {
++	struct excl_lock* lc;
++	if ((lc = find_excl_lock(vp)) == NULL)
++		return;
++	if (lc->info & EXCL_MOVED)
++		drop_lock(lc);
++	UNLOCK_EXCL(lc);
++}
++
++void excl_mark_as_moved(struct vnode* vp) {
++	struct excl_lock* lc;
++	if ((lc = find_excl_lock(vp)) == NULL)
++		return;
++
++	lc->info |= EXCL_MOVED;
++	UNLOCK_EXCL(lc);
++}
++	
 +void excl_drop_lock(struct vnode* vp) {
 +	struct excl_lock* lc;
 +	for (lc = &excl_lock[0]; lc < &excl_lock[NR_EXCLUSIVE]; lc++) {
@@ -181,7 +200,6 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +
 +void init_excl_locks(void) {
 +	struct excl_lock* lc;
-+
 +	for (lc = &excl_lock[0]; lc < &excl_lock[NR_EXCLUSIVE]; lc++) {
 +		if (mutex_init(&lc->mutex, NULL) != 0)
 +			panic("Failed to initialize filp mutex");
@@ -254,6 +272,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +			}
 +			drop_lock(lc);
 +			UNLOCK_EXCL(lc);
++			break;
 +		case EXCL_UNLOCK_FORCE:
 +			if ((lc = find_excl_lock(vp)) == NULL)
 +				return EINVAL;
@@ -263,6 +282,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +			}
 +			drop_lock(lc);
 +			UNLOCK_EXCL(lc);
++			break;
 +		default:
 +			return EINVAL;
 +	}
@@ -315,7 +335,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +	if ((fil = get_filp(fd, TLL_READ)) == NULL)
 +		return EBADF;
 +
-+	if ((r = forbidden(fp, fp->file_vno, R_BIT) != OK) &&
++	if ((r = forbidden(fp, fp->file_vno,R_BIT) != OK) &&
 +		(r = forbidden(fp, fp->file_vno, W_BIT) != OK))
 +	{
 +		r = EBADF;
@@ -338,7 +358,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/fs.h fake_mount/usr/src/minix
  #endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/minix/servers/vfs/link.c
 --- old_mount/usr/src/minix/servers/vfs/link.c	2023-06-15 20:02:39.805608345 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/link.c	2023-06-18 22:08:55.425948060 +0200
++++ fake_mount/usr/src/minix/servers/vfs/link.c	2023-06-18 23:35:39.457388120 +0200
 @@ -20,7 +20,10 @@
  #include <sys/dirent.h>
  #include <assert.h>
@@ -349,6 +369,15 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
 +#include "vmnt.h"
  #include "vnode.h"
  #include "scratchpad.h"
+ 
+@@ -73,7 +76,7 @@ int do_link(void)
+   else
+ 	r = forbidden(fp, dirp, W_BIT | X_BIT);
+ 
+-  if (r == OK)
++  if (r == OK) {
+ 	r = req_link(vp->v_fs_e, dirp->v_inode_nr, fullpath,
+ 		     vp->v_inode_nr);
  
 @@ -100,7 +103,7 @@ int do_unlink(void)
    struct vmnt *vmp, *vmp2;
@@ -386,8 +415,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
 +	if ((dirp->v_mode & S_ISVTX) == S_ISVTX &&
 +	   (vp->v_uid != fp->fp_effuid && fp->fp_effuid != SU_UID))
  			r = EPERM;
- 		unlock_vnode(vp);
- 		put_vnode(vp);
+-		unlock_vnode(vp);
+-		put_vnode(vp);
 -	} else
 +  }
 +  else 
@@ -397,13 +426,28 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  		unlock_vnode(dirp);
  		unlock_vmnt(vmp);
  		put_vnode(dirp);
++	unlock_vnode(vp);
++	put_vnode(vp);
  		return(r);
  	}
 -  }
  
    upgrade_vmnt_lock(vmp);
  
-@@ -175,7 +181,7 @@ int do_rename(void)
+@@ -161,6 +167,12 @@ int do_unlink(void)
+   unlock_vnode(dirp);
+   unlock_vmnt(vmp);
+   put_vnode(dirp);
++
++  if (r == OK)
++	excl_mark_as_moved(vp);
++
++  unlock_vnode(vp);
++  put_vnode(vp);
+   return(r);
+ }
+ 
+@@ -175,7 +187,7 @@ int do_rename(void)
    struct vmnt *oldvmp, *newvmp, *vmp2;
    char old_name[PATH_MAX];
    char fullpath[PATH_MAX];
@@ -412,7 +456,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
    vir_bytes vname1, vname2;
    size_t vname1_length, vname2_length;
  
-@@ -193,29 +199,32 @@ int do_rename(void)
+@@ -193,35 +205,40 @@ int do_rename(void)
    if (fetch_name(vname1, vname1_length, fullpath) != OK) return(err_code);
    if ((old_dirp = last_dir(&resolve, fp)) == NULL) return(err_code);
  
@@ -434,14 +478,14 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
 -		if(vp->v_uid != fp->fp_effuid && fp->fp_effuid != SU_UID)
 +	 /* If the sticky bit is set, only the owner of the file or a privileged
 +	user is allowed to rename */
-+	if ((old_dirp->v_mode & S_ISVTX) == S_ISVTX)
-+		if (vp->v_uid != fp->fp_effuid && fp->fp_effuid != SU_UID)
++	if ((old_dirp->v_mode & S_ISVTX) == S_ISVTX &&
++	   (vp->v_uid != fp->fp_effuid && fp->fp_effuid != SU_UID))
  			r = EPERM;
+-		unlock_vnode(vp);
+-		put_vnode(vp);
+-	} else
 +	if (excl_perm_check(vp, fp->fp_realuid) != EXCL_OK)
 +		r = EACCES;
- 		unlock_vnode(vp);
- 		put_vnode(vp);
--	} else
 +  }
 +  else 
  		r = err_code;
@@ -450,13 +494,32 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  		unlock_vnode(old_dirp);
  		unlock_vmnt(oldvmp);
  		put_vnode(old_dirp);
++	unlock_vnode(vp);
++	put_vnode(vp);
  		return(r);
  	}
 -  }
  
    /* Save the last component of the old name */
    if (strlen(fullpath) >= sizeof(old_name)) {
-@@ -254,6 +263,22 @@ int do_rename(void)
+ 	unlock_vnode(old_dirp);
+ 	unlock_vmnt(oldvmp);
+ 	put_vnode(old_dirp);
++	unlock_vnode(vp);
++	put_vnode(vp);
+ 	return(ENAMETOOLONG);
+   }
+   strlcpy(old_name, fullpath, PATH_MAX);
+@@ -244,6 +261,8 @@ int do_rename(void)
+ 	unlock_vnode(old_dirp);
+ 	unlock_vmnt(oldvmp);
+ 	put_vnode(old_dirp);
++	unlock_vnode(vp);
++	put_vnode(vp);
+ 	return(r);
+   }
+ 
+@@ -254,12 +273,31 @@ int do_rename(void)
    if ((r1 = forbidden(fp, old_dirp, W_BIT|X_BIT)) != OK ||
        (r1 = forbidden(fp, new_dirp, W_BIT|X_BIT)) != OK) r = r1;
  
@@ -479,7 +542,26 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
    if (r == OK) {
  	upgrade_vmnt_lock(oldvmp); /* Upgrade to exclusive access */
  	r = req_rename(old_dirp->v_fs_e, old_dirp->v_inode_nr, old_name,
-@@ -310,7 +335,9 @@ int do_truncate(void)
+ 		       new_dirp->v_inode_nr, fullpath);
+   }
+ 
++  if (r == OK)
++	excl_mark_as_moved(vp);
++  
+   unlock_vnode(old_dirp);
+   unlock_vmnt(oldvmp);
+   if (new_dirp_l) unlock_vnode(new_dirp_l);
+@@ -267,6 +305,9 @@ int do_rename(void)
+ 
+   put_vnode(old_dirp);
+   put_vnode(new_dirp);
++  unlock_vnode(vp);
++  put_vnode(vp);
++
+ 
+   return(r);
+ }
+@@ -310,7 +351,9 @@ int do_truncate(void)
  	 * ensures that the file times are retained when the file size remains
  	 * the same, which is a POSIX requirement.
  	 */
@@ -490,7 +572,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  		r = OK;
  	else
  		r = truncate_vnode(vp, length);
-@@ -344,7 +371,9 @@ int do_ftruncate(void)
+@@ -344,7 +387,9 @@ int do_ftruncate(void)
  
    vp = rfilp->filp_vno;
  
@@ -598,8 +680,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/open.c fake_mount/usr/src/min
  	lock_count = nr_locks;	/* save count of locks */
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/proto.h fake_mount/usr/src/minix/servers/vfs/proto.h
 --- old_mount/usr/src/minix/servers/vfs/proto.h	2023-06-15 20:02:39.808941742 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/proto.h	2023-06-18 22:05:30.471194227 +0200
-@@ -348,4 +348,13 @@ void worker_wait(void);
++++ fake_mount/usr/src/minix/servers/vfs/proto.h	2023-06-18 23:37:23.816278481 +0200
+@@ -348,4 +348,15 @@ void worker_wait(void);
  struct worker_thread *worker_suspend(void);
  void worker_resume(struct worker_thread *org_self);
  void worker_set_proc(struct fproc *rfp);
@@ -611,6 +693,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/proto.h fake_mount/usr/src/mi
 +void excl_drop_lock(struct vnode* vp);
 +void excl_closing_fd(int closed_fd, pid_t caller_p, struct vnode* vp);
 +void init_excl_locks(void);
++void excl_put_vnode_handler(struct vnode* vp);
++void excl_mark_as_moved(struct vnode* vp);
 +
  #endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/read.c fake_mount/usr/src/minix/servers/vfs/read.c
@@ -655,7 +739,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/table.c fake_mount/usr/src/mi
  };
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/vnode.c fake_mount/usr/src/minix/servers/vfs/vnode.c
 --- old_mount/usr/src/minix/servers/vfs/vnode.c	2023-06-15 20:02:39.812275138 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/vnode.c	2023-06-18 15:23:14.365003591 +0200
++++ fake_mount/usr/src/minix/servers/vfs/vnode.c	2023-06-18 23:22:54.637840676 +0200
 @@ -9,6 +9,7 @@
   */
  
@@ -668,7 +752,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/vnode.c fake_mount/usr/src/mi
    vp->v_ref_count = 0;
    vp->v_mapfs_count = 0;
  
-+  excl_drop_lock(vp);
++  excl_put_vnode_handler(fp, vp);
 +
    unlock_vnode(vp);
  }

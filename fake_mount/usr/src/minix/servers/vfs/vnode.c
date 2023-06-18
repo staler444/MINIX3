@@ -294,7 +294,7 @@ void put_vnode(struct vnode *vp)
   vp->v_ref_count = 0;
   vp->v_mapfs_count = 0;
 
-  excl_drop_lock(vp);
+  excl_put_vnode_handler(fp, vp);
 
   unlock_vnode(vp);
 }

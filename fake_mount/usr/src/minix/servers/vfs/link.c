@@ -76,7 +76,7 @@ int do_link(void)
   else
 	r = forbidden(fp, dirp, W_BIT | X_BIT);
 
-  if (r == OK)
+  if (r == OK) {
 	r = req_link(vp->v_fs_e, dirp->v_inode_nr, fullpath,
 		     vp->v_inode_nr);
 
@@ -145,8 +145,6 @@ int do_unlink(void)
 	if ((dirp->v_mode & S_ISVTX) == S_ISVTX &&
 	   (vp->v_uid != fp->fp_effuid && fp->fp_effuid != SU_UID))
 		r = EPERM;
-	unlock_vnode(vp);
-	put_vnode(vp);
   }
   else 
 	r = err_code;
@@ -155,6 +153,8 @@ int do_unlink(void)
 	unlock_vnode(dirp);
 	unlock_vmnt(vmp);
 	put_vnode(dirp);
+	unlock_vnode(vp);
+	put_vnode(vp);
 	return(r);
   }
 
@@ -167,6 +167,12 @@ int do_unlink(void)
   unlock_vnode(dirp);
   unlock_vmnt(vmp);
   put_vnode(dirp);
+
+  if (r == OK)
+	excl_mark_as_moved(vp);
+
+  unlock_vnode(vp);
+  put_vnode(vp);
   return(r);
 }
 
@@ -208,13 +214,11 @@ int do_rename(void)
   if (vp != NULL) {
 	 /* If the sticky bit is set, only the owner of the file or a privileged
 	user is allowed to rename */
-	if ((old_dirp->v_mode & S_ISVTX) == S_ISVTX)
-		if (vp->v_uid != fp->fp_effuid && fp->fp_effuid != SU_UID)
-			r = EPERM;
+	if ((old_dirp->v_mode & S_ISVTX) == S_ISVTX &&
+	   (vp->v_uid != fp->fp_effuid && fp->fp_effuid != SU_UID))
+		r = EPERM;
 	if (excl_perm_check(vp, fp->fp_realuid) != EXCL_OK)
 		r = EACCES;
-	unlock_vnode(vp);
-	put_vnode(vp);
   }
   else 
 	r = err_code;
@@ -223,6 +227,8 @@ int do_rename(void)
 	unlock_vnode(old_dirp);
 	unlock_vmnt(oldvmp);
 	put_vnode(old_dirp);
+	unlock_vnode(vp);
+	put_vnode(vp);
 	return(r);
   }
 
@@ -231,6 +237,8 @@ int do_rename(void)
 	unlock_vnode(old_dirp);
 	unlock_vmnt(oldvmp);
 	put_vnode(old_dirp);
+	unlock_vnode(vp);
+	put_vnode(vp);
 	return(ENAMETOOLONG);
   }
   strlcpy(old_name, fullpath, PATH_MAX);
@@ -253,6 +261,8 @@ int do_rename(void)
 	unlock_vnode(old_dirp);
 	unlock_vmnt(oldvmp);
 	put_vnode(old_dirp);
+	unlock_vnode(vp);
+	put_vnode(vp);
 	return(r);
   }
 
@@ -285,6 +295,9 @@ int do_rename(void)
 		       new_dirp->v_inode_nr, fullpath);
   }
 
+  if (r == OK)
+	excl_mark_as_moved(vp);
+  
   unlock_vnode(old_dirp);
   unlock_vmnt(oldvmp);
   if (new_dirp_l) unlock_vnode(new_dirp_l);
@@ -292,6 +305,9 @@ int do_rename(void)
 
   put_vnode(old_dirp);
   put_vnode(new_dirp);
+  unlock_vnode(vp);
+  put_vnode(vp);
+
 
   return(r);
 }
