@@ -6,6 +6,8 @@
  */
 
 #include "const.h"
+#include "threads.h"
+#include <sys/types.h>
 
 EXTERN struct excl_lock {
   mutex_t mutex; 

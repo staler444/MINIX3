@@ -73,8 +73,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/const.h fake_mount/usr/src/mi
  
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/src/minix/servers/vfs/excl_lock.h
 --- old_mount/usr/src/minix/servers/vfs/excl_lock.h	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/excl_lock.h	2023-06-18 19:41:24.872838048 +0200
-@@ -0,0 +1,29 @@
++++ fake_mount/usr/src/minix/servers/vfs/excl_lock.h	2023-06-18 19:50:55.858784576 +0200
+@@ -0,0 +1,31 @@
 +#ifndef __VFS_EXCL_LOCK_H__
 +#define __VFS_EXCL_LOCK_H__
 +
@@ -83,6 +83,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 + */
 +
 +#include "const.h"
++#include "threads.h"
++#include <sys/types.h>
 +
 +EXTERN struct excl_lock {
 +  mutex_t mutex; 
@@ -106,8 +108,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 19:26:28.554410803 +0200
-@@ -0,0 +1,201 @@
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 19:49:05.912918718 +0200
+@@ -0,0 +1,200 @@
 +#include "excl_lock.h"
 +#include "fs.h"
 +#include "threads.h"
@@ -126,8 +128,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +#define OK 0
 +#define NOT_OK -1
 +
-+#define locked_by(vp, lc) ((lc->info&EXCL_LOCKED) && lc->dev == vp->v_dev \ 
-+	&& lc->inode_nr == vp->v_inode_nr)
++#define locked_by(vp, lc) ((lc->info&EXCL_LOCKED) && lc->dev == vp->v_dev && lc->inode_nr == vp->v_inode_nr)
 +#define drop_lock(lc) ((lc->info = (lc->info & EXCL_LOCKED ? lc->info^EXCL_LOCKED : lc->info))) 
 +
 +#define LOCK_EXCL(lc) if (mutex_lock(&lc->mutex) != 0) { \

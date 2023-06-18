@@ -16,8 +16,7 @@
 #define OK 0
 #define NOT_OK -1
 
-#define locked_by(vp, lc) ((lc->info&EXCL_LOCKED) && lc->dev == vp->v_dev \ 
-	&& lc->inode_nr == vp->v_inode_nr)
+#define locked_by(vp, lc) ((lc->info&EXCL_LOCKED) && lc->dev == vp->v_dev && lc->inode_nr == vp->v_inode_nr)
 #define drop_lock(lc) ((lc->info = (lc->info & EXCL_LOCKED ? lc->info^EXCL_LOCKED : lc->info))) 
 
 #define LOCK_EXCL(lc) if (mutex_lock(&lc->mutex) != 0) { \
