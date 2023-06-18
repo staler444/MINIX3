@@ -79,6 +79,7 @@ int do_link(void)
   if (r == OK) {
 	r = req_link(vp->v_fs_e, dirp->v_inode_nr, fullpath,
 		     vp->v_inode_nr);
+  }
 
   unlock_vnode(vp);
   unlock_vnode(dirp);

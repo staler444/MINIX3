@@ -356,7 +356,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/fs.h fake_mount/usr/src/minix
  #endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/minix/servers/vfs/link.c
 --- old_mount/usr/src/minix/servers/vfs/link.c	2023-06-15 20:02:39.805608345 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/link.c	2023-06-18 23:38:04.513812712 +0200
++++ fake_mount/usr/src/minix/servers/vfs/link.c	2023-06-18 23:51:01.534637232 +0200
 @@ -20,7 +20,10 @@
  #include <sys/dirent.h>
  #include <assert.h>
@@ -368,7 +368,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  #include "vnode.h"
  #include "scratchpad.h"
  
-@@ -73,7 +76,7 @@ int do_link(void)
+@@ -73,9 +76,10 @@ int do_link(void)
    else
  	r = forbidden(fp, dirp, W_BIT | X_BIT);
  
@@ -376,8 +376,11 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
 +  if (r == OK) {
  	r = req_link(vp->v_fs_e, dirp->v_inode_nr, fullpath,
  		     vp->v_inode_nr);
++  }
  
-@@ -100,7 +103,7 @@ int do_unlink(void)
+   unlock_vnode(vp);
+   unlock_vnode(dirp);
+@@ -100,7 +104,7 @@ int do_unlink(void)
    struct vmnt *vmp, *vmp2;
    int r;
    char fullpath[PATH_MAX];
@@ -386,7 +389,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  
    if (copy_path(fullpath, sizeof(fullpath)) != OK)
  	return(err_code);
-@@ -128,29 +131,32 @@ int do_unlink(void)
+@@ -128,29 +132,32 @@ int do_unlink(void)
  	return(r);
    }
  
@@ -432,7 +435,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  
    upgrade_vmnt_lock(vmp);
  
-@@ -161,6 +167,12 @@ int do_unlink(void)
+@@ -161,6 +168,12 @@ int do_unlink(void)
    unlock_vnode(dirp);
    unlock_vmnt(vmp);
    put_vnode(dirp);
@@ -445,7 +448,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
    return(r);
  }
  
-@@ -175,7 +187,7 @@ int do_rename(void)
+@@ -175,7 +188,7 @@ int do_rename(void)
    struct vmnt *oldvmp, *newvmp, *vmp2;
    char old_name[PATH_MAX];
    char fullpath[PATH_MAX];
@@ -454,7 +457,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
    vir_bytes vname1, vname2;
    size_t vname1_length, vname2_length;
  
-@@ -193,35 +205,40 @@ int do_rename(void)
+@@ -193,35 +206,40 @@ int do_rename(void)
    if (fetch_name(vname1, vname1_length, fullpath) != OK) return(err_code);
    if ((old_dirp = last_dir(&resolve, fp)) == NULL) return(err_code);
  
@@ -508,7 +511,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  	return(ENAMETOOLONG);
    }
    strlcpy(old_name, fullpath, PATH_MAX);
-@@ -244,6 +261,8 @@ int do_rename(void)
+@@ -244,6 +262,8 @@ int do_rename(void)
  	unlock_vnode(old_dirp);
  	unlock_vmnt(oldvmp);
  	put_vnode(old_dirp);
@@ -517,7 +520,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  	return(r);
    }
  
-@@ -254,12 +273,31 @@ int do_rename(void)
+@@ -254,12 +274,31 @@ int do_rename(void)
    if ((r1 = forbidden(fp, old_dirp, W_BIT|X_BIT)) != OK ||
        (r1 = forbidden(fp, new_dirp, W_BIT|X_BIT)) != OK) r = r1;
  
@@ -549,7 +552,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
    unlock_vnode(old_dirp);
    unlock_vmnt(oldvmp);
    if (new_dirp_l) unlock_vnode(new_dirp_l);
-@@ -267,6 +305,9 @@ int do_rename(void)
+@@ -267,6 +306,9 @@ int do_rename(void)
  
    put_vnode(old_dirp);
    put_vnode(new_dirp);
@@ -559,7 +562,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  
    return(r);
  }
-@@ -310,7 +351,9 @@ int do_truncate(void)
+@@ -310,7 +352,9 @@ int do_truncate(void)
  	 * ensures that the file times are retained when the file size remains
  	 * the same, which is a POSIX requirement.
  	 */
@@ -570,7 +573,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  		r = OK;
  	else
  		r = truncate_vnode(vp, length);
-@@ -344,7 +387,9 @@ int do_ftruncate(void)
+@@ -344,7 +388,9 @@ int do_ftruncate(void)
  
    vp = rfilp->filp_vno;
  
