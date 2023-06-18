@@ -47,7 +47,4 @@ extern int (* const call_vec[])(void);
 
 EXTERN struct kinfo kinfo;     /* kernel information */
 
-EXTERN int excl_locked_count;	/* number of locked files via VFS_EXCLUSIVE/
-				  VFS_FEXCLUSIVE sys calls */
-
 #endif
