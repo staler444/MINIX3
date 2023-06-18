@@ -99,16 +99,15 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 09:57:21.594188624 +0200
-@@ -0,0 +1,117 @@
-+#include "excl_lock.h"
-+#include "const.h"
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 10:27:00.124607809 +0200
+@@ -0,0 +1,116 @@
 +#include "fs.h"
++#include "const.h"
 +#include "glo.h"
 +#include "vnode.h"
 +#include "fproc.h"
-+#include <asm-generic/errno-base.h>
 +#include <minix/endpoint.h>
++#include <minix/vfsif.h>
 +#include <sys/types.h>
 +#include <sys/fcntl.h>
 +#include <stdio.h>
@@ -230,7 +229,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/fs.h fake_mount/usr/src/minix
  #endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/main.c fake_mount/usr/src/minix/servers/vfs/main.c
 --- old_mount/usr/src/minix/servers/vfs/main.c	2023-06-15 20:02:39.805608345 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/main.c	2023-06-18 10:08:26.594925800 +0200
++++ fake_mount/usr/src/minix/servers/vfs/main.c	2023-06-18 10:27:51.799298379 +0200
 @@ -26,6 +26,7 @@
  #include <minix/debug.h>
  #include <minix/vfsif.h>

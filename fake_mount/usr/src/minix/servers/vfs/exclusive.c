@@ -1,11 +1,10 @@
-#include "excl_lock.h"
-#include "const.h"
 #include "fs.h"
+#include "const.h"
 #include "glo.h"
 #include "vnode.h"
 #include "fproc.h"
-#include <asm-generic/errno-base.h>
 #include <minix/endpoint.h>
+#include <minix/vfsif.h>
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <stdio.h>
