@@ -2,6 +2,7 @@
 #include "file.h"
 #include "tll.h"
 #include "vnode.h"
+#include "lookup.h"
 #include <minix/endpoint.h>
 #include <minix/vfsif.h>
 #include <sys/types.h>
@@ -165,33 +166,55 @@ int do_exclusive(void) {
 	int flags = job_m_in.m_lc_vfs_exclusive.flags;
 	int fd = -1;
 	int info = EXCL_BY_PATH;
+	vir_bytes name = job_m_in.m_lc_vfs_exclusive.name;
+	size_t len = job_m_in.m_lc_vfs_exclusive.len;
+	char fullpath[PATH_MAX];
+	int r;
+	
+	struct vnode* vp;
+	struct vmnt* vmp;
+	struct lookup resolve;
 
-	return do_common(NULL,flags, fd, info) ;
+	lookup_init(&resolve, fullpath, PATH_NOFLAGS, &vmp, &vp);
+	resolve.l_vmnt_lock = VMNT_READ;
+	resolve.l_vnode_lock = VNODE_READ;
+
+	if (fetch_name(name, len, fullpath) != OK) return(err_code);
+	if ((vp = eat_path(&resolve, fp)) == NULL) return(err_code);
+
+	if ((r = forbidden(fp, vp, R_BIT)) != OK &&
+	    (r = forbidden(fp, vp, W_BIT)) != OK)
+	{
+		r = EACCES;
+	}
+	else 
+		r = do_common(vp,flags, fd, info);
+
+	unlock_vnode(vp);
+	unlock_vmnt(vmp);
+
+	put_vnode(vp);
+	return r;
 }
 
 int do_fexclusive(void) {
 	int flags = job_m_in.m_lc_vfs_exclusive.flags;
 	int fd = job_m_in.m_lc_vfs_exclusive.fd;
 	int info = EXCL_BY_FD;
+	int r;
 
 	struct filp* fil;
 	if ((fil = get_filp(fd, TLL_READ)) == NULL)
 		return EBADF;
 
-	if (fil->filp_count == 0 || fp->fp_filp[fd]->filp_vno == NULL) {
-		unlock_filp(fil);
-		return EBADF;
-	}
-
-	   printf("CHUJ1");
-	/* check for r/w permission only if locking file */
-	if (!(fil->filp_mode & (R_BIT|W_BIT)) && 
-	   (flags & (EXCL_LOCK|EXCL_LOCK_NO_OTHERS)))
+	if ((r = forbidden(fp, fp->file_vno, R_BIT) != OK) &&
+		(r = forbidden(fp, fp->file_vno, W_BIT) != OK))
 	{
-		unlock_filp(fil);
-		return EBADF;
+		r = EBADF;
 	}
-	int r = do_common(fil->filp_vno, flags, fd, info);
+	else 
+		r = do_common(fil->filp_vno, flags, fd, info);
+
 	unlock_filp(fil);
 	return r;
 }
