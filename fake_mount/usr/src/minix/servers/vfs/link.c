@@ -11,7 +11,6 @@
  *   do_rdlink:       perform the RDLNK system call
  */
 
-#include "excl_lock.h"
 #include "fs.h"
 #include <sys/stat.h>
 #include <string.h>
@@ -320,7 +319,7 @@ int do_truncate(void)
 	 * ensures that the file times are retained when the file size remains
 	 * the same, which is a POSIX requirement.
 	 */
-	if (r = excl_perm_check(vp, fp->fp_realuid) != EXCL_OK)
+	if ((r = excl_perm_check(vp, fp->fp_realuid)) != EXCL_OK)
 		r = EACCES;
 	else if (S_ISREG(vp->v_mode) && vp->v_size == length)
 		r = OK;

@@ -2,7 +2,7 @@
 #define __VFS_EXCL_LOCK_H__
 
 /* This is the exclusive lock table.
- * Slot free if vp == NULL.
+ * Slot free if (info & EXCL_LOCKED) == false
  */
 
 #include "const.h"
