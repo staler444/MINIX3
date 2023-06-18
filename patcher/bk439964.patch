@@ -230,7 +230,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/fs.h fake_mount/usr/src/minix
  #endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/main.c fake_mount/usr/src/minix/servers/vfs/main.c
 --- old_mount/usr/src/minix/servers/vfs/main.c	2023-06-15 20:02:39.805608345 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/main.c	2023-06-17 18:18:54.670874465 +0200
++++ fake_mount/usr/src/minix/servers/vfs/main.c	2023-06-18 10:08:26.594925800 +0200
 @@ -26,6 +26,7 @@
  #include <minix/debug.h>
  #include <minix/vfsif.h>
@@ -239,16 +239,6 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/main.c fake_mount/usr/src/min
  #include "scratchpad.h"
  #include "vmnt.h"
  #include "vnode.h"
-@@ -386,6 +387,9 @@ static int sef_cb_init_fresh(int UNUSED(
-   worker_start(fproc_addr(VFS_PROC_NR), do_init_root, &mess /*unused*/,
- 	FALSE /*use_spare*/);
- 
-+  /* init locked files counter */
-+  excl_locked_count = 0;
-+
-   return(OK);
- }
- 
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/Makefile fake_mount/usr/src/minix/servers/vfs/Makefile
 --- old_mount/usr/src/minix/servers/vfs/Makefile	2023-06-15 20:02:39.805608345 +0200
 +++ fake_mount/usr/src/minix/servers/vfs/Makefile	2023-06-15 17:37:20.024768290 +0200

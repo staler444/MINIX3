@@ -387,9 +387,6 @@ static int sef_cb_init_fresh(int UNUSED(type), sef_init_info_t *info)
   worker_start(fproc_addr(VFS_PROC_NR), do_init_root, &mess /*unused*/,
 	FALSE /*use_spare*/);
 
-  /* init locked files counter */
-  excl_locked_count = 0;
-
   return(OK);
 }
 
