@@ -740,7 +740,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/table.c fake_mount/usr/src/mi
  };
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/vnode.c fake_mount/usr/src/minix/servers/vfs/vnode.c
 --- old_mount/usr/src/minix/servers/vfs/vnode.c	2023-06-15 20:02:39.812275138 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/vnode.c	2023-06-18 23:22:54.637840676 +0200
++++ fake_mount/usr/src/minix/servers/vfs/vnode.c	2023-06-18 23:54:44.393074433 +0200
 @@ -9,6 +9,7 @@
   */
  
@@ -753,7 +753,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/vnode.c fake_mount/usr/src/mi
    vp->v_ref_count = 0;
    vp->v_mapfs_count = 0;
  
-+  excl_put_vnode_handler(fp, vp);
++  excl_put_vnode_handler(vp);
 +
    unlock_vnode(vp);
  }
