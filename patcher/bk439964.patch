@@ -99,10 +99,11 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/excl_lock.h fake_mount/usr/sr
 +#endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/src/minix/servers/vfs/exclusive.c
 --- old_mount/usr/src/minix/servers/vfs/exclusive.c	1970-01-01 01:00:00.000000000 +0100
-+++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 10:27:00.124607809 +0200
-@@ -0,0 +1,116 @@
++++ fake_mount/usr/src/minix/servers/vfs/exclusive.c	2023-06-18 10:43:06.236999767 +0200
+@@ -0,0 +1,117 @@
 +#include "fs.h"
 +#include "const.h"
++#include "file.h"
 +#include "glo.h"
 +#include "vnode.h"
 +#include "fproc.h"
@@ -145,7 +146,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +		for (int j = 0; j < OPEN_MAX; i++)
 +			if (fproc[i].fp_realuid == caller &&
 +				fproc[i].fp_flip[j] != NULL &&
-+				fproc[i].fp_flip[j].filp_vp == vp)
++				fproc[i].fp_flip[j]->filp_vp == vp)
 +			{
 +				return NOT_OK;
 +			}
@@ -208,7 +209,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/exclusive.c fake_mount/usr/sr
 +		return EBADF;
 +	if (fp->fp_filp[fd] == NULL)
 +		return EBADF;
-+	if (fp->fp_filp[fd].filp_count == 0 || fp->fp_filp[fd]->filp_vno == NULL)
++	if (fp->fp_filp[fd]->filp_count == 0 || fp->fp_filp[fd]->filp_vno == NULL)
 +		return EBADF;
 +	if (!(fp->fp_filp[fd]->filp_mode & (R_BIT|W_BIT)))
 +		return EBADF;

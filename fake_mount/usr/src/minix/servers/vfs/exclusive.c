@@ -1,5 +1,6 @@
 #include "fs.h"
 #include "const.h"
+#include "file.h"
 #include "glo.h"
 #include "vnode.h"
 #include "fproc.h"
@@ -42,7 +43,7 @@ int check_for_other_users(void) {
 		for (int j = 0; j < OPEN_MAX; i++)
 			if (fproc[i].fp_realuid == caller &&
 				fproc[i].fp_flip[j] != NULL &&
-				fproc[i].fp_flip[j].filp_vp == vp)
+				fproc[i].fp_flip[j]->filp_vp == vp)
 			{
 				return NOT_OK;
 			}
@@ -105,7 +106,7 @@ int do_fexclusive(void) {
 		return EBADF;
 	if (fp->fp_filp[fd] == NULL)
 		return EBADF;
-	if (fp->fp_filp[fd].filp_count == 0 || fp->fp_filp[fd]->filp_vno == NULL)
+	if (fp->fp_filp[fd]->filp_count == 0 || fp->fp_filp[fd]->filp_vno == NULL)
 		return EBADF;
 	if (!(fp->fp_filp[fd]->filp_mode & (R_BIT|W_BIT)))
 		return EBADF;
