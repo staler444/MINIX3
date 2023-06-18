@@ -698,16 +698,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/proto.h fake_mount/usr/src/mi
  #endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/read.c fake_mount/usr/src/minix/servers/vfs/read.c
 --- old_mount/usr/src/minix/servers/vfs/read.c	2023-06-15 20:02:39.808941742 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/read.c	2023-06-18 23:56:31.265487322 +0200
-@@ -10,6 +10,7 @@
-  *
-  */
- 
-+#include "excl_lock.h"
- #include "fs.h"
- #include <minix/callnr.h>
- #include <minix/com.h>
-@@ -20,6 +21,8 @@
++++ fake_mount/usr/src/minix/servers/vfs/read.c	2023-06-19 00:16:28.948541650 +0200
+@@ -20,6 +20,8 @@
  #include <fcntl.h>
  #include <unistd.h>
  #include "file.h"
@@ -716,7 +708,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/read.c fake_mount/usr/src/min
  #include "scratchpad.h"
  #include "vnode.h"
  #include "vmnt.h"
-@@ -225,6 +229,9 @@ int read_write(struct fproc *rfp, int rw
+@@ -225,6 +228,9 @@ int read_write(struct fproc *rfp, int rw
  	if(rw_flag == PEEKING) {
  		r = req_peek(vp->v_fs_e, vp->v_inode_nr, position, size);
  	} else {
@@ -726,7 +718,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/read.c fake_mount/usr/src/min
  		off_t new_pos;
  		r = req_readwrite(vp->v_fs_e, vp->v_inode_nr, position,
  			rw_flag, for_e, buf, size, &new_pos,
-@@ -236,6 +243,7 @@ int read_write(struct fproc *rfp, int rw
+@@ -236,6 +242,7 @@ int read_write(struct fproc *rfp, int rw
  		}
          }
    }
