@@ -275,28 +275,6 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/table.c fake_mount/usr/src/mi
 +	CALL(VFS_EXCLUSIVE)	= do_exclusive,		/* exclusive() */
 +	CALL(VFS_FEXCLUSIVE)	= do_fexclusive,	/* fexclusive() */
  };
-diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/vnode.c fake_mount/usr/src/minix/servers/vfs/vnode.c
---- old_mount/usr/src/minix/servers/vfs/vnode.c	2023-06-15 20:02:39.812275138 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/vnode.c	2023-06-17 18:18:27.480323719 +0200
-@@ -93,6 +93,7 @@ struct vnode *get_free_vnode()
- 		vp->v_mapfs_e = NONE;
- 		vp->v_mapfs_count = 0;
- 		vp->v_mapinode_nr = 0;
-+		vp->excl_lock = 0;
- 		return(vp);
- 	}
-   }
-@@ -145,6 +146,10 @@ void init_vnodes(void)
- 	vp->v_fs_count = 0;
- 	vp->v_mapfs_count = 0;
- 	tll_init(&vp->v_lock);
-+	vp->excl_lock = 0;
-+	vp->excl_caller = 0;
-+	vp->excl_moved = 0;
-+	vp->excl_fd_locker = -1;
-   }
- }
- 
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/vnode.h fake_mount/usr/src/minix/servers/vfs/vnode.h
 --- old_mount/usr/src/minix/servers/vfs/vnode.h	2023-06-15 20:02:39.812275138 +0200
 +++ fake_mount/usr/src/minix/servers/vfs/vnode.h	2023-06-17 21:35:59.707926504 +0200
