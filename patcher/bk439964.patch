@@ -318,16 +318,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/fs.h fake_mount/usr/src/minix
  #endif
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/minix/servers/vfs/link.c
 --- old_mount/usr/src/minix/servers/vfs/link.c	2023-06-15 20:02:39.805608345 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/link.c	2023-06-18 22:00:33.007739464 +0200
-@@ -12,6 +12,7 @@
-  */
- 
- #include "fs.h"
-+#include <asm-generic/errno-base.h>
- #include <sys/stat.h>
- #include <string.h>
- #include <minix/com.h>
-@@ -20,7 +21,10 @@
++++ fake_mount/usr/src/minix/servers/vfs/link.c	2023-06-18 22:08:55.425948060 +0200
+@@ -20,7 +20,10 @@
  #include <sys/dirent.h>
  #include <assert.h>
  #include "file.h"
@@ -338,7 +330,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  #include "vnode.h"
  #include "scratchpad.h"
  
-@@ -100,7 +104,7 @@ int do_unlink(void)
+@@ -100,7 +103,7 @@ int do_unlink(void)
    struct vmnt *vmp, *vmp2;
    int r;
    char fullpath[PATH_MAX];
@@ -347,7 +339,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  
    if (copy_path(fullpath, sizeof(fullpath)) != OK)
  	return(err_code);
-@@ -128,29 +132,32 @@ int do_unlink(void)
+@@ -128,29 +131,32 @@ int do_unlink(void)
  	return(r);
    }
  
@@ -391,7 +383,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  
    upgrade_vmnt_lock(vmp);
  
-@@ -175,7 +182,7 @@ int do_rename(void)
+@@ -175,7 +181,7 @@ int do_rename(void)
    struct vmnt *oldvmp, *newvmp, *vmp2;
    char old_name[PATH_MAX];
    char fullpath[PATH_MAX];
@@ -400,7 +392,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
    vir_bytes vname1, vname2;
    size_t vname1_length, vname2_length;
  
-@@ -193,29 +200,32 @@ int do_rename(void)
+@@ -193,29 +199,32 @@ int do_rename(void)
    if (fetch_name(vname1, vname1_length, fullpath) != OK) return(err_code);
    if ((old_dirp = last_dir(&resolve, fp)) == NULL) return(err_code);
  
@@ -444,7 +436,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  
    /* Save the last component of the old name */
    if (strlen(fullpath) >= sizeof(old_name)) {
-@@ -254,6 +264,22 @@ int do_rename(void)
+@@ -254,6 +263,22 @@ int do_rename(void)
    if ((r1 = forbidden(fp, old_dirp, W_BIT|X_BIT)) != OK ||
        (r1 = forbidden(fp, new_dirp, W_BIT|X_BIT)) != OK) r = r1;
  
@@ -467,7 +459,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
    if (r == OK) {
  	upgrade_vmnt_lock(oldvmp); /* Upgrade to exclusive access */
  	r = req_rename(old_dirp->v_fs_e, old_dirp->v_inode_nr, old_name,
-@@ -310,7 +336,9 @@ int do_truncate(void)
+@@ -310,7 +335,9 @@ int do_truncate(void)
  	 * ensures that the file times are retained when the file size remains
  	 * the same, which is a POSIX requirement.
  	 */
@@ -478,7 +470,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/link.c fake_mount/usr/src/min
  		r = OK;
  	else
  		r = truncate_vnode(vp, length);
-@@ -344,7 +372,9 @@ int do_ftruncate(void)
+@@ -344,7 +371,9 @@ int do_ftruncate(void)
  
    vp = rfilp->filp_vno;
  
@@ -551,18 +543,8 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/mount.c fake_mount/usr/src/mi
  	unlock_vmnt(vmp);
 diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/open.c fake_mount/usr/src/minix/servers/vfs/open.c
 --- old_mount/usr/src/minix/servers/vfs/open.c	2023-06-15 20:02:39.808941742 +0200
-+++ fake_mount/usr/src/minix/servers/vfs/open.c	2023-06-18 21:34:00.697085909 +0200
-@@ -9,7 +9,9 @@
-  *   do_lseek:  perform the LSEEK system call
-  */
- 
-+#include "excl_lock.h"
- #include "fs.h"
-+#include <asm-generic/errno-base.h>
- #include <sys/stat.h>
- #include <fcntl.h>
- #include <string.h>
-@@ -18,6 +20,7 @@
++++ fake_mount/usr/src/minix/servers/vfs/open.c	2023-06-18 22:08:14.058331281 +0200
+@@ -18,6 +18,7 @@
  #include <minix/com.h>
  #include <minix/u64.h>
  #include "file.h"
@@ -570,7 +552,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/open.c fake_mount/usr/src/min
  #include "scratchpad.h"
  #include "lock.h"
  #include <sys/dirent.h>
-@@ -141,8 +144,12 @@ int common_open(char path[PATH_MAX], int
+@@ -141,8 +142,12 @@ int common_open(char path[PATH_MAX], int
  
    /* Only do the normal open code if we didn't just create the file. */
    if (exist) {
@@ -584,7 +566,7 @@ diff -rupNEZbB old_mount/usr/src/minix/servers/vfs/open.c fake_mount/usr/src/min
  		/* Opening reg. files, directories, and special files differ */
  		switch (vp->v_mode & S_IFMT) {
  		   case S_IFREG:
-@@ -695,6 +702,9 @@ int fd_nr;
+@@ -695,6 +700,9 @@ int fd_nr;
  
    FD_CLR(fd_nr, &rfp->fp_cloexec_set);
  

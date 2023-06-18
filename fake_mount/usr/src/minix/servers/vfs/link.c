@@ -12,7 +12,6 @@
  */
 
 #include "fs.h"
-#include <asm-generic/errno-base.h>
 #include <sys/stat.h>
 #include <string.h>
 #include <minix/com.h>
