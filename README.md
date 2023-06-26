@@ -1,12 +1,12 @@
-Blokowanie plików przez użytkowników na wyłączność
+#Blokowanie plików przez użytkowników na wyłączność
 
 Celem zadania jest rozszerzenie serwera vfs o mechanizm umożliwiający użytkownikom blokowanie na wyłączność dostępu do wybranych plików. W odróżnieniu od standardowych blokad flock, mechanizm ten będzie obligatoryjny (ang. mandatory) i będzie działał na poziomie użytkowników, nie procesów. W odróżnieniu od standardowych uprawnień dostępu do plików, mechanizm ten będzie implementował tymczasowe blokowanie, niewymagające zmian atrybutów plików.
-VFS
+#VFS
 
 VFS (ang. Virtual File System, pol. Wirtualny System Plików) to podsystem systemu operacyjnego umożliwiający jednolity dostęp do plików umieszczonych na różnych systemach plików. Jest on warstwą pośredniczącą między aplikacjami a podsystemami implementującymi konkretne systemy plików (MFS, ext2, procfs itd.). Przetwarza wywołania systemowe realizujące operacje na plikach, implementuje akcje wspólne dla różnych systemów plików oraz przekazuje żądania do odpowiednich systemów plików. Zarządza on także wszystkimi używanymi w systemie plikami i wszystkimi zamontowanymi systemami plików.
 
 W MINIX-ie wirtualny system plików jest zaimplementowany jako serwer vfs. Więcej o jego budowie i sposobie działania można przeczytać na Wiki MINIX-a: VFS internals.
-Wywołania systemowe VFS_FEXCLUSIVE i VFS_EXCLUSIVE
+#Wywołania systemowe VFS_FEXCLUSIVE i VFS_EXCLUSIVE
 
 Mechanizm blokowania plików opiera się na nowych wywołaniach systemowych VFS_FEXCLUSIVE i VFS_EXCLUSIVE obsługiwanych przez serwer vfs. Za ich pomocą użytkownik może tymczasowo zablokować innym użytkownikom możliwość wykonania na wskazanym pliku następujących działań: otwarcia pliku (wywołania systemowe VFS_OPEN i VFS_CREAT), odczytu (VFS_READ), zapisu (VFS_WRITE), skrócenia (VFS_TRUNCATE i VFS_FTRUNCATE), przeniesienia i zmiany nazwy (VFS_RENAME, zarówno gdy zablokowany plik jest pierwszym, jak i drugim argumentem) oraz usunięcia pliku (VFS_UNLINK). Użytkownik, który zablokował plik może wykonywać te operacje bez ograniczeń z różnych procesów. Natomiast próba wykonania ich przez innego użytkownika powinna zakończyć się błędem EACCES.
 
@@ -50,55 +50,54 @@ Mechanizm blokowania plików działa według następującej specyfikacji:
 
     Wywołania systemowe VFS_FEXCLUSIVE i VFS_EXCLUSIVE realizują ten sam mechanizm blokowania plików. Możliwe jest zablokowanie pliku, używając jednego wywołania systemowego i odblokowanie tego pliku go za pomocą drugiego wywołania systemowego.
 
-Załączniki do zadania
+#Załączniki do zadania
 
 Do zadania załączona jest łatka zadanie5-szablon.patch, która definiuje stałe opisane w zadaniu oraz dodaje wywołania systemowe VFS_FEXCLUSIVE i VFS_EXCLUSIVE realizowane przez funkcje int do_fexclusive(void) i int do_exclusive(void) dodane do serwera vfs.
 
 Do zadania załączone są także przykładowe programy test-fexclusive.c, test-exclusive-lock.c i test-exclusive-unlock.c, które ilustrują użycie wywołań systemowych VFS_FEXCLUSIVE i VFS_EXCLUSIVE do blokowania innym użytkownikom dostępu do pliku podanego jako argument programu. Przykładowy scenariusz użycia programu test-fexclusive.c:
 
-# make test-fexclusive
+$ make test-fexclusive
 clang -O2   -o test-fexclusive test-fexclusive.c
-# touch /tmp/test.txt
-# ./test-fexclusive /tmp/test.txt
+$ touch /tmp/test.txt
+$ ./test-fexclusive /tmp/test.txt
 Blokuję plik...
 Wynik VFS_FEXCLUSIVE: 0, errno: 0
 Czekam... Naciśnij coś
 
 W tym momencie próba otwarcia pliku /tmp/test.txt przez innego użytkownika nie powiedzie się:
 
-# cat /tmp/test.txt
+$ cat /tmp/test.txt
 cat: /tmp/test.txt: Permission denied
 
 Kontynuowanie działania programu test-fexclusive zamknie plik /tmp/test.txt, co spowoduje odblokowanie pliku /tmp/test.txt i inni użytkownicy będą mogli z nim pracować.
 
 Przykładowy scenariusz użycia programu test-exclusive-lock.c:
 
-# make test-exclusive-lock
+$ make test-exclusive-lock
 clang -O2   -o test-exclusive-lock test-exclusive-lock.c
-# touch /tmp/test.txt
-# ./test-exclusive-lock /tmp/test.txt
+$ touch /tmp/test.txt
+$ ./test-exclusive-lock /tmp/test.txt
 Blokuję plik...
 Wynik VFS_EXCLUSIVE: 0, errno: 0
-#
+
 
 W tym momencie próba otwarcia pliku /tmp/test.txt przez innego użytkownika nie powiedzie się:
 
-# cat /tmp/test.txt
+$ cat /tmp/test.txt
 cat: /tmp/test.txt: Permission denied
 
 Plik można odblokować za pomocą programu test-exclusive-unlock.c:
 
-# make test-exclusive-unlock
+$ make test-exclusive-unlock
 clang -O2   -o test-exclusive-unlock test-exclusive-unlock.c
-# ./test-exclusive-unlock /tmp/test.txt
+$ ./test-exclusive-unlock /tmp/test.txt
 Odblokowuję plik...
 Wynik VFS_EXCLUSIVE: 0, errno: 0
-#
 
 Teraz inni użytkownicy mogą znów z nim pracować.
 
 Komentarze wewnątrz kodu przykładowych programów ilustrują także użycie pozostałych flag wywołań systemowych.
-Wymagania i niewymagania
+#Wymagania i niewymagania
 
     Wszystkie pozostałe operacje realizowane przez serwer vfs, inne niż opisane powyżej, powinny działać bez zmian.
 
@@ -114,7 +113,7 @@ Wymagania i niewymagania
 
     Rozwiązanie nie musi być optymalne pod względem prędkości działania. Akceptowane będą rozwiązania, które działają bez zauważalnej dla użytkownika zwłoki.
 
-Wskazówki
+#Wskazówki
 
     Implementacja serwera vfs nie jest omawiana na zajęciach, ponieważ jednym z celów tego zadania jest samodzielne przeanalizowanie odpowiednich fragmentów kodu źródłowego MINIX-a. Rozwiązując to zadanie, należy więcej kodu przeczytać, niż samodzielnie napisać lub zmodyfikować.
 
@@ -136,7 +135,7 @@ Wskazówki
 
     F. Aby odmontować dysk, należy użyć polecenia umount /root/nowy.
 
-Rozwiązanie
+#Rozwiązanie
 
 Poniżej przyjmujemy, że ab123456 oznacza identyfikator studentki lub studenta rozwiązującego zadanie. Należy przygotować łatkę (ang. patch) ze zmianami w sposób opisany w treści zadania 3. Rozwiązanie w postaci łatki ab123456.patch należy umieścić w Moodle. Łatka będzie aplikowana do nowej kopii MINIX-a. Uwaga: łatka z rozwiązaniem powinna zawierać także zmiany dodane przez łatkę zadanie5-szablon.patch. Należy zadbać, aby łatka zawierała tylko niezbędne różnice.
 
@@ -149,7 +148,7 @@ cd /usr/src/minix/servers/vfs/; make clean && make && make install
 cd /usr/src/releasetools; make do-hdboot
 reboot
 
-Ocenianie
+#Ocenianie
 
 Oceniana będą zarówno poprawność, jak i styl rozwiązania. Podstawą do oceny rozwiązania będą testy automatyczne sprawdzające poprawność implementacji oraz przejrzenie kodu przez sprawdzającego. Rozwiązanie, w którym łatka nie nakłada się poprawnie, które nie kompiluje się lub powoduje kernel panic podczas uruchamiania, otrzyma 0 punktów.
 
