@@ -1,8 +1,6 @@
 # User's exclusive file lock
 Project's goal, is to extend vfs server by user's exclusive file lock. Unlike standard flock, this locking mechanism will be mandatory, and will work at user's level (not precesses). Unlike standard file premissions, this mechanism will also implement temporary blocking, without need to change files atributes.
 
-Celem zadania jest rozszerzenie serwera vfs o mechanizm umożliwiający użytkownikom blokowanie na wyłączność dostępu do wybranych plików. W odróżnieniu od standardowych blokad flock, mechanizm ten będzie obligatoryjny (ang. mandatory) i będzie działał na poziomie użytkowników, nie procesów. W odróżnieniu od standardowych uprawnień dostępu do plików, mechanizm ten będzie implementował tymczasowe blokowanie, niewymagające zmian atrybutów plików.
-
 # VFS
 MINIX's Virtual File System server. For detailed description see MINIX wiki. (link)
 
