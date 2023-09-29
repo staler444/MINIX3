@@ -22,44 +22,39 @@ User who blocked file can perform above operations without any limitations, from
 VFS_FEXCLUSIVE system call takes two arguments, file descriptor and flag indicating action to perform. Following actions are supported:
 + EXCL_LOCK: Lock file indicated by file descriptor, to exclusive use for user performing call. If file wasn't unlocked earlier, then file will by automaticly unlocked at the moment of closing file descriptor.
 + EXCL_LOCK_NO_OTHERS: Works same as EXCL_LOCK, but locks file ONLY if file is NOT open by any OTHER user at the moment (user who perform call, can have this file opened). If this conditions are not met, syscall ends with EAGAIN error.
-+ EXCL_UNLOCK: Unlocks file indicated by file descriptor. File can by unlock only by user, who locked it.
-+ EXCL_UNLOCK_FORCE: Unlocks file indicated by file descriptor. File can by unlocked by user who locked it, by user who is owner of that file or by superuser (aka root, aka UID=0).
++ EXCL_UNLOCK: Unlocks file indicated by file descriptor. File can by unlocked only by user, who locked it.
++ EXCL_UNLOCK_FORCE: Unlocks file indicated by file descriptor. File can be unlocked by user who locked it, by user who is owner of that file or by superuser (aka root, aka UID=0).
 
 ## VFS_EXCLUSIVE
 
-Argumentami wywołania systemowego VFS_FEXCLUSIVE są deskryptor i flaga oznaczająca wykonywaną akcję. Obsługiwane są następujące akcje:
+VFS_EXCLUSIVE system call takes two arguments, path to file and dlag indicating action to perform. Following actions are supported:
 
-    EXCL_LOCK: Blokuje plik wskazany przez deskryptor na wyłączność użytkownika, który wywołuje to wywołanie systemowe. Jeśli plik nie zostanie odblokowany jawnie przez użytkownika, to plik zostanie odblokowany automatycznie w momencie, gdy zamknięty zostanie deskryptor, który był argumentem wywołania blokującego plik.
++ EXCL_LOCK: Lock file indicated by path, to exclusive use for user performing call. Files stays locked until it's excplicitly unlocked by user. Only exception is when locked file is removed by user (by VFS_UNLINK) or replaced (locked file would be second argumnet of VFS_RENAME). In this case file will by automaticly unlocked when non process will have file opened (file became unused at the moment).
 
-    EXCL_LOCK_NO_OTHERS: Działa tak jak EXCL_LOCK, ale plik jest blokowany wyłącznie, gdy nie jest w tym momencie otwarty także przez innego użytkownika (użytkownik blokujący plik może mieć ten plik otwarty dowolną liczbę razy). W przeciwnym przypadku wywołanie kończy się błędem EAGAIN.
++ EXCL_LOCK_NO_OTHERS: Works as EXCL_LOCK, but file is locked only if no other user have file opened (only caller user have is using file at the moment). If this condidion isn't met, call ends with EAGAIN error.
 
-    EXCL_UNLOCK: Odblokowuje plik wskazany przez deskryptor. Plik odblokować może tylko użytkownik, który go zablokował.
++ EXCL_UNLOCK: Unlocks file indicated by path. File can be unlocked only by user, who locked it.
 
-    EXCL_UNLOCK_FORCE: Odblokowuje plik wskazany przez deskryptor. Plik odblokować może użytkownik, który go zablokował, użytkownik, który jest właścicielem tego pliku lub superużytkownik (ang. root, użytkownik o UID = 0).
++ EXCL_UNLOCK_FORCE: Unlocks file indicated by path. File can be unlocked by user who locked it, by user who is owner of that file or by superuser (aka root, aka UID=0).
 
-Argumentami wywołania systemowego VFS_EXCLUSIVE są ścieżka do pliku i flaga oznaczająca wykonywaną akcję. Obsługiwane są następujące akcje:
+## Additional constraints
 
-    EXCL_LOCK: Blokuje plik wskazany przez podaną ścieżkę na wyłączność użytkownika, który wywołuje to wywołanie systemowe. Plik pozostaje zablokowany, aż nie zostanie jawnie odblokowany przez użytkownika. Wyjątkiem od tej reguły jest sytuacja, gdy zablokowany plik zostanie przez użytkownika usunięty (wywołaniem systemowym VFS_UNLINK) lub zastąpiony innym plikiem (zablokowany plik będzie drugim argumentem VFS_RENAME). W takim przypadku plik zostanie automatycznie odblokowany w momencie, gdy plik przestanie być używany przez wszystkich użytkowników (żaden proces nie będzie miał otwartego tego pliku).
++ Only simple files are locked. Attempt to lock directory/pseudodevice/pipe/fifi etc. will end with EFTYPE error.
 
-    EXCL_LOCK_NO_OTHERS: Działa tak jak EXCL_LOCK, ale plik jest blokowany wyłącznie, gdy nie jest w tym momencie otwarty także przez innego użytkownika (użytkownik blokujący plik może mieć ten plik otwarty dowolną liczbę razy). W przeciwnym przypadku wywołanie kończy się błędem EAGAIN.
++ Always actual file is locked, indicated by file descriptor/path at the moment of call. File doesn't stop being locked after move (within same partition), rename, after accesing via link path. Techicaly actual v-node/i-node is being locked.
 
-    EXCL_UNLOCK: Odblokowuje plik wskazany przez podaną ścieżkę. Plik odblokować może tylko użytkownik, który go zablokował.
++ Files locks aren't held after file system unmount. Presence of locked file doesn't interfere with unmounting (if unmounting partition would end with succes without locked files, will end with succes with them).
 
-    EXCL_UNLOCK_FORCE: Odblokowuje plik wskazany przez podaną ścieżkę. Plik odblokować może użytkownik, który go zablokował, użytkownik, który jest właścicielem tego pliku lub superużytkownik (ang. root, użytkownik o UID = 0).
++ Lock on file is held from the moment of locking to the moment of unlocking. Listet above system calls check users permissions to access file before every call, so following scenario is posible: User A with sucess opens file. User B locks file. User B try to read file, ends with EACESS error. User A unlock file. User B's another try to read ends with succes.
+
++ Users are identified by thier real id (real UID), regardles of thier effective id (effective UID).
+
++ With VFS_FEXCLUSIVE user can only lock file if provided descriptor is open in read or write mode (or both). If not, call ends with EBADF error. 
+
++ With VFS_EXCLUSIVE user can only lock file if have rights to read/write that file. If not, call ends with EACCES error.
 
 Mechanizm blokowania plików działa według następującej specyfikacji:
 
-    Blokowane są wyłącznie zwykłe pliki. Próba zablokowania katalogu, pseduourządzenia, potoku (ang. pipe, fifo) itp. kończy się błędem EFTYPE.
-
-    Blokowany lub odblokowywany jest konkretny plik, wskazany przez deskryptor lub ścieżkę w momencie blokowania lub odblokowywania go. Plik nie przestaje być zablokowany wskutek późniejszego przeniesienia go (w obrębie partycji), zmiany mu nazwy, wskazania go przez ścieżkę z dowiązaniem (ang. link) itd. Technicznie blokowany jest konkretny v-węzeł lub i-węzeł (ang. v-node/i-node).
-
-    Blokady plików nie są zachowywane po odmontowaniu systemu plików. Obecność zablokowanych plików nie uniemożliwia odmonotowania systemu plików (jeśli odmontowanie partycji bez zablokowanych plików by się powiodło, to powiedzie się także odmontowanie tej partycji, gdy są na niej zablokowane pliki).
-
-    Blokada obowiązuje od momentu zablokowania pliku do momentu jego odblokowania. Wymienione wyżej wywołania systemowe sprawdzają możliwość dostępu do pliku w każdym ich wywołaniu. Możliwa jest zatem sytuacja, gdy użytkownik z powodzeniem otworzy plik, a następnie inny użytkownik go zablokuje, więc następna operacja pierwszego użytkownika (np. odczyt zawartości pliku) zakończy się błędem EACCES, a gdy drugi użytkownik odblokuje plik, kolejna operacja pierwszego użytkownika (np. ponowna próba odczytu zawartości pliku) zakończy się sukcesem.
-
-    Użytkownik jest identyfikowany przez jego rzeczywisty identyfikator (ang. real UID), niezależnie od wartości identyfikatora efektywnego (ang. effective UID).
-
-    Za pomocą VFS_FEXCLUSIVE zablokować plik można wyłącznie, gdy podany deskryptor jest otwarty w trybie do odczytu lub zapisu. W przeciwnym przypadku wywołanie systemowe kończy się błędem EBADF. Za pomocą VFS_EXCLUSIVE zablokować plik można wyłącznie, gdy użytkownik wywołujący ma uprawnienia do odczytu lub zapisu pliku wskazanego przez podaną ścieżkę. W przeciwnym przypadku wywołanie systemowe kończy się błędem EACCES.
 
     Jeśli wywołania systemowe VFS_FEXCLUSIVE i VFS_EXCLUSIVE nie mogą zakończyć się powodzeniem, kończą się odpowiednim błędem. Na przykład: EINVAL – jeśli w wywołaniu podana została inna flaga niż obsługiwane akcje lub wskazany do odblokowania plik nie jest zablokowany, EBADF – jeśli podany w wywołaniu deskryptor jest nieprawidłowy, EALREADY – jeśli wskazany do zablokowania plik jest już zablokowany, EPERM – jeśli użytkownik nie jest uprawniony do odblokowania wskazanego pliku itd.
 
