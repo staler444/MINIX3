@@ -7,19 +7,25 @@ MINIX's Virtual File System server. For detailed description see MINIX wiki. (li
 # VFS_FEXCLUSIVE and VFS_EXCLUSIVE system calls
 
 New blocking mechanism will depend on two new system calls handled by vfs server, VFS_FEXCLUSIVE and VFS_EXCLUSIVE.
-By them, user will be able to temporarly, on the indicated file, prevent other users to
-+ open file (VFS_OPEN and VFS_CREATE syscalls)
-+ read file (VFS_READ)
-+ write file (VFS_WRITE)
-+ shortend file (VFS_TRUNCATE and VFS_FTRUNCATE)
+By them, user will be able to temporarly, on the indicated file, prevent other users to perform operations listet down below:
++ open (VFS_OPEN and VFS_CREATE syscalls)
++ read (VFS_READ)
++ write (VFS_WRITE)
++ truncate (VFS_TRUNCATE and VFS_FTRUNCATE)
 + move and rename file (VFS_RENAME both cases, when blocked file is first or second argument of syscall)
-+ remove file (VFS_UNLINK)
++ remove (VFS_UNLINK)
 
-User who blocked file can perform above operations without any limitations, from difrent processes. Attempt to perform any of them by other users should end with EACESS error.
+User who blocked file can perform above operations without any limitations, from difrent processes. Attempt to perform any of them by other users will end with EACESS error.
 
+## VFS_FEXCLUSIVE
 
+VFS_FEXCLUSIVE system call takes two arguments, file descriptor and flag indicating action to perform. Following actions are supported:
++ EXCL_LOCK: Lock file indicated by file descriptor, to exclusive use for user performing call. If file wasn't unlocked earlier, then file will by automaticly unlocked at the moment of closing file descriptor.
++ EXCL_LOCK_NO_OTHERS: Works same as EXCL_LOCK, but locks file ONLY if file is NOT open by any OTHER user at the moment (user who perform call, can have this file opened). If this conditions are not met, syscall ends with EAGAIN error.
++ EXCL_UNLOCK: Unlocks file indicated by file descriptor. File can by unlock only by user, who locked it.
++ EXCL_UNLOCK_FORCE: Unlocks file indicated by file descriptor. File can by unlocked by user who locked it, by user who is owner of that file or by superuser (aka root, aka UID=0).
 
-Mechanizm blokowania plików opiera się na nowych wywołaniach systemowych VFS_FEXCLUSIVE i VFS_EXCLUSIVE obsługiwanych przez serwer vfs. Za ich pomocą użytkownik może tymczasowo zablokować innym użytkownikom możliwość wykonania na wskazanym pliku następujących działań: otwarcia pliku (wywołania systemowe VFS_OPEN i VFS_CREAT), odczytu (VFS_READ), zapisu (VFS_WRITE), skrócenia (VFS_TRUNCATE i VFS_FTRUNCATE), przeniesienia i zmiany nazwy (VFS_RENAME, zarówno gdy zablokowany plik jest pierwszym, jak i drugim argumentem) oraz usunięcia pliku (VFS_UNLINK). Użytkownik, który zablokował plik może wykonywać te operacje bez ograniczeń z różnych procesów. Natomiast próba wykonania ich przez innego użytkownika powinna zakończyć się błędem EACCES.
+## VFS_EXCLUSIVE
 
 Argumentami wywołania systemowego VFS_FEXCLUSIVE są deskryptor i flaga oznaczająca wykonywaną akcję. Obsługiwane są następujące akcje:
 
