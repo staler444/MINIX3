@@ -1,25 +1,12 @@
-# User's exclusive file lock
-Project's goal, is to extend vfs server by user's exclusive file lock. Unlike standard flock, this locking mechanism will be mandatory, and will work at user's level (not precesses). Unlike standard file premissions, this mechanism will also implement temporary blocking, without need to change files atributes.
+# Blokowanie plików przez użytkowników na wyłączność
 
 Celem zadania jest rozszerzenie serwera vfs o mechanizm umożliwiający użytkownikom blokowanie na wyłączność dostępu do wybranych plików. W odróżnieniu od standardowych blokad flock, mechanizm ten będzie obligatoryjny (ang. mandatory) i będzie działał na poziomie użytkowników, nie procesów. W odróżnieniu od standardowych uprawnień dostępu do plików, mechanizm ten będzie implementował tymczasowe blokowanie, niewymagające zmian atrybutów plików.
-
 # VFS
-MINIX's Virtual File System server. For detailed description see MINIX wiki. (link)
 
-# VFS_FEXCLUSIVE and VFS_EXCLUSIVE system calls
+VFS (ang. Virtual File System, pol. Wirtualny System Plików) to podsystem systemu operacyjnego umożliwiający jednolity dostęp do plików umieszczonych na różnych systemach plików. Jest on warstwą pośredniczącą między aplikacjami a podsystemami implementującymi konkretne systemy plików (MFS, ext2, procfs itd.). Przetwarza wywołania systemowe realizujące operacje na plikach, implementuje akcje wspólne dla różnych systemów plików oraz przekazuje żądania do odpowiednich systemów plików. Zarządza on także wszystkimi używanymi w systemie plikami i wszystkimi zamontowanymi systemami plików.
 
-New blocking mechanism will depend on two new system calls handled by vfs server, VFS_FEXCLUSIVE and VFS_EXCLUSIVE.
-By them, user will be able to temporarly, on the indicated file, prevent other users to
-+ open file (VFS_OPEN and VFS_CREATE syscalls)
-+ read file (VFS_READ)
-+ write file (VFS_WRITE)
-+ shortend file (VFS_TRUNCATE and VFS_FTRUNCATE)
-+ move and rename file (VFS_RENAME both cases, when blocked file is first or second argument of syscall)
-+ remove file (VFS_UNLINK)
-
-User who blocked file can perform above operations without any limitations, from difrent processes. Attempt to perform any of them by other users should end with EACESS error.
-
-
+W MINIX-ie wirtualny system plików jest zaimplementowany jako serwer vfs. Więcej o jego budowie i sposobie działania można przeczytać na Wiki MINIX-a: VFS internals.
+# Wywołania systemowe VFS_FEXCLUSIVE i VFS_EXCLUSIVE
 
 Mechanizm blokowania plików opiera się na nowych wywołaniach systemowych VFS_FEXCLUSIVE i VFS_EXCLUSIVE obsługiwanych przez serwer vfs. Za ich pomocą użytkownik może tymczasowo zablokować innym użytkownikom możliwość wykonania na wskazanym pliku następujących działań: otwarcia pliku (wywołania systemowe VFS_OPEN i VFS_CREAT), odczytu (VFS_READ), zapisu (VFS_WRITE), skrócenia (VFS_TRUNCATE i VFS_FTRUNCATE), przeniesienia i zmiany nazwy (VFS_RENAME, zarówno gdy zablokowany plik jest pierwszym, jak i drugim argumentem) oraz usunięcia pliku (VFS_UNLINK). Użytkownik, który zablokował plik może wykonywać te operacje bez ograniczeń z różnych procesów. Natomiast próba wykonania ich przez innego użytkownika powinna zakończyć się błędem EACCES.
 
