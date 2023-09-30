@@ -2,7 +2,7 @@
 Project's goal, is to extend vfs server by user's exclusive file lock. Unlike standard flock, this locking mechanism will be mandatory, and will work at user's level (not precesses). Unlike standard file premissions, this mechanism will also implement temporary blocking, without need to change files atributes.
 
 # VFS
-MINIX's Virtual File System server. For detailed description see MINIX wiki. (link)
+MINIX's Virtual File System server. For detailed description see [MINIX wiki](https://wiki.minix3.org/doku.php?id=developersguide:vfsinternals).
 
 # VFS_FEXCLUSIVE and VFS_EXCLUSIVE system calls
 
@@ -65,9 +65,19 @@ VFS_EXCLUSIVE system call takes two arguments, path to file and dlag indicating 
 
 + VFS_FEXCLUSIVE and VFS_EXCLUSIVE provide interfase to same locking mechanism. User can lock file via VFS_FEXCLUSIVE and unlock it via VFS_EXCLUSIVE and vice versa (?).
 
-# Project structure
+# Project's structure
 
-## fake_mount and old_mount
+## old_mount
 
-These are minix source codes. old_mount contains directory tree of original minix files (only 
+Contains original file tree with structure of original minix source files, but contains only files that are to by chaned by patch. Preserving original minix source file structure enables to generate patches eazly.
 
+## fake_mount 
+Same files as old_mount, but with changes. These are actual source file of tis project. Comparing these with old_mount generates patches.
+
+## patcher directory
+
+Contains scripts to generate/upload/install patches etc.
+
+## test directory 
+
+Contains few simple test cases.
