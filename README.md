@@ -57,7 +57,7 @@ VFS_EXCLUSIVE system call takes two arguments, path to file and dlag indicating 
 
 + Both VFS_FEXCLUSIVE and VFS_EXCLUSIVE fail with EINVAL error, if provided flag is incorrect, or file to unlock is not locked.
 
-+ Both $\textcolor{red}{VFS\_FEXCLUSIVE}$ and VFS_EXCLUSIVE fail with EALREADY error, if user try --(s?) to lock already locked file.
++ Both $\text{\color{red}VFS\_FEXCLUSIVE}$ and VFS_EXCLUSIVE fail with EALREADY error, if user try --(s?) to lock already locked file.
 
 + Both VFS_FEXCLUSIVE and VFS_EXCLUSIVE fail with EPERM error, if user try to unlock file, which he is not permited to.
 
@@ -87,14 +87,6 @@ $\mathcal{\color{purple}{this \ is \ a \ paragraph} \ \color{cyan}{in \ another 
 $\mathbb{\color{teal}{this \ is \ a } \ \color{magenta}{paragraph \ in \ another \ font}}$
 
 $\mathscr{\color{red}{this} \ \ \color{blue}{is \ \ a \ \ paragraph} \ \ \color{yellow}{in \ \ another \ \ font}}$
-
-$\mathfrak{\color{lime}{this \ is \ a \ paragraph \ in \ another \ font}}$
-
-$\mathscr{\color{red}{mon}\color{white}{day}}$
-
-$\textcolor{olive}{\TeX} \ \textcolor{darkgray}{workaround \ found \ by \ Dassalem \ Mohammed \ Yasser}$
-
-$\textit{hello}$  #italic
 
 $\text{hello}$    #normal
 
