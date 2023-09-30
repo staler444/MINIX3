@@ -82,6 +82,6 @@ Contains scripts to generate/upload/install patches etc.
 
 Contains few simple test cases.
 
-```lateh
-\textcolor{blue}{This is a sample text in blue.}
+```html
+<p color="blue"> chuj <\p>
 ```
