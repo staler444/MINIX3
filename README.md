@@ -82,4 +82,4 @@ Contains scripts to generate/upload/install patches etc.
 
 Contains few simple test cases.
 
-<a style="color:blue;"> chuj </a>
+$\textcolor{red}{yo}$
