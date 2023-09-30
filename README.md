@@ -82,4 +82,4 @@ Contains scripts to generate/upload/install patches etc.
 
 Contains few simple test cases.
 
-<p color="blue"> chuj </p>
+<p style="color:blue;"> chuj </p>
