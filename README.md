@@ -1,7 +1,7 @@
 # User's exclusive file lock
-Project's goal, is to extend vfs server by user's exclusive file lock. Unlike standard flock, this locking mechanism will be mandatory, and will work at user's level (not precesses). Unlike standard file premissions, this mechanism will also implement temporary blocking, without need to change files atributes.
+Project's goal is to extend vfs server by user's exclusive file lock. Unlike standard flock, this locking mechanism will be mandatory, and will work at user's level (not precesses). Unlike standard file premissions, this mechanism will also implement temporary blocking, without need to change files atributes.
 
-# VFS
+# VFS server
 MINIX's Virtual File System server. For detailed description see [MINIX wiki](https://wiki.minix3.org/doku.php?id=developersguide:vfsinternals).
 
 # VFS_FEXCLUSIVE and VFS_EXCLUSIVE system calls
@@ -81,3 +81,5 @@ Contains scripts to generate/upload/install patches etc.
 ## test directory 
 
 Contains few simple test cases.
+
+\textcolor{blue}{This is a sample text in blue.}
