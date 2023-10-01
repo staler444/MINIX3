@@ -62,9 +62,7 @@ User who blocked file can perform above operations without any limitations, from
 
 + Both $\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$ and $\color[RGB]{247, 118, 142}{VFS\\_EXCLUSIVE}$ fail with $\color[RGB]{42, 195, 222}{EPERM}$ error, if user try to unlock file, which he is not permited to.
 
-+ There are only NR_EXCLUSIVE simutanusy (?) locked files. If there are already NR_EXCLUSIVE locked files, every attempt to lock file will fail with E$\color[RGB]{42, 195, 222}{ENOLCK}$ error.
-
-$\color[RGB]{42, 195, 222}{???}$
++ There are only NR_EXCLUSIVE simutanusy (?) locked files. If there are already NR_EXCLUSIVE locked files, every attempt to lock file will fail with $\color[RGB]{42, 195, 222}{ENOLCK}$ error.
 
 + $\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$ and $\color[RGB]{247, 118, 142}{VFS\\_EXCLUSIVE}$ provide interfase to same locking mechanism. User can lock file via $\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$ and unlock it via $\color[RGB]{247, 118, 142}{VFS\\_EXCLUSIVE}$ and vice versa (?).
 
