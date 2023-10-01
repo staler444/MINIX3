@@ -6,7 +6,7 @@ MINIX's Virtual File System server. For detailed description see [MINIX wiki](ht
 
 # VFS_FEXCLUSIVE and VFS_EXCLUSIVE system calls
 
-New blocking mechanism will depend on two new system calls handled by vfs server, VFS_FEXCLUSIVE and VFS_EXCLUSIVE.
+New blocking mechanism will depend on two new system calls handled by vfs server, $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and VFS_EXCLUSIVE.
 By them, user will be able to temporarly, on the indicated file, prevent other users to perform operations listet down below:
 + open (VFS_OPEN and VFS_CREATE syscalls)
 + read (VFS_READ)
@@ -19,7 +19,7 @@ User who blocked file can perform above operations without any limitations, from
 
 ## VFS_FEXCLUSIVE
 
-VFS_FEXCLUSIVE system call takes two arguments, file descriptor and flag indicating action to perform. Following actions are supported:
+ $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$ system call takes two arguments, file descriptor and flag indicating action to perform. Following actions are supported:
 + EXCL_LOCK: Lock file indicated by file descriptor, to exclusive use for user performing call. If file wasn't unlocked earlier, then file will by automaticly unlocked at the moment of closing file descriptor.
 + EXCL_LOCK_NO_OTHERS: Works same as EXCL_LOCK, but locks file ONLY if file is NOT open by any OTHER user at the moment (user who perform call, can have this file opened). If this conditions are not met, syscall ends with EAGAIN error.
 + EXCL_UNLOCK: Unlocks file indicated by file descriptor. File can by unlocked only by user, who locked it.
@@ -49,21 +49,21 @@ VFS_EXCLUSIVE system call takes two arguments, path to file and dlag indicating 
 
 + Users are identified by thier real id (real UID), regardles of thier effective id (effective UID).
 
-+ With VFS_FEXCLUSIVE user can only lock file if provided descriptor is open in read or write mode (or both). If not, call ends with EBADF error. 
++ With $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  user can only lock file if provided descriptor is open in read or write mode (or both). If not, call ends with EBADF error. 
 
 + With VFS_EXCLUSIVE user can only lock file if have rights to read/write that file. If not, call ends with EACCES error.
 
-+ VFS_FEXCLUSIVE fail with EBADF if provided descriptor is not valid.
++ $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  fail with EBADF if provided descriptor is not valid.
 
-+ Both VFS_FEXCLUSIVE and VFS_EXCLUSIVE fail with EINVAL error, if provided flag is incorrect, or file to unlock is not locked.
++ Both $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and VFS_EXCLUSIVE fail with EINVAL error, if provided flag is incorrect, or file to unlock is not locked.
 
 + Both $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$ and VFS_EXCLUSIVE fail with EALREADY error, if user try --(s?) to lock already locked file.
 
-+ Both VFS_FEXCLUSIVE and VFS_EXCLUSIVE fail with EPERM error, if user try to unlock file, which he is not permited to.
++ Both $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and VFS_EXCLUSIVE fail with EPERM error, if user try to unlock file, which he is not permited to.
 
 + There are only NR_EXCLUSIVE simutanusy (?) locked files. If there are already NR_EXCLUSIVE locked files, every attempt to lock file will fail with ENOLCK error.
 
-+ VFS_FEXCLUSIVE and VFS_EXCLUSIVE provide interfase to same locking mechanism. User can lock file via VFS_FEXCLUSIVE and unlock it via VFS_EXCLUSIVE and vice versa (?).
++ $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and VFS_EXCLUSIVE provide interfase to same locking mechanism. User can lock file via $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and unlock it via VFS_EXCLUSIVE and vice versa (?).
 
 # Project's structure
 
@@ -81,13 +81,3 @@ Contains scripts to generate/upload/install patches etc.
 ## test directory 
 
 Contains few simple test cases.
-
-$\mathcal{\color{purple}{this \ is \ a \ paragraph} \ \color{cyan}{in \ another \ font}}$
-
-$\mathbb{\color{teal}{this \ is \ a } \ \color{magenta}{paragraph \ in \ another \ font}}$
-
-$\mathscr{\color{red}{this} \ \ \color{blue}{is \ \ a \ \ paragraph} \ \ \color{yellow}{in \ \ another \ \ font}}$
-
-$\text{hello}$    #normal
-
-$\Large{hello}$$   #Bigger text size
