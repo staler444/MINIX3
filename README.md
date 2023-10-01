@@ -64,6 +64,10 @@ $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_E
 
 + There are only NR_EXCLUSIVE simutanusy (?) locked files. If there are already NR_EXCLUSIVE locked files, every attempt to lock file will fail with ENOLCK error.
 
+$\color[RGB]{42, 195, 222}{???}$
+
+$\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$
+
 + $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_EXCLUSIVE}$ provide interfase to same locking mechanism. User can lock file via $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and unlock it via $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_EXCLUSIVE}$ and vice versa (?).
 
 # Project's structure
