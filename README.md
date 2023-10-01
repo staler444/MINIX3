@@ -57,7 +57,7 @@ VFS_EXCLUSIVE system call takes two arguments, path to file and dlag indicating 
 
 + Both VFS_FEXCLUSIVE and VFS_EXCLUSIVE fail with EINVAL error, if provided flag is incorrect, or file to unlock is not locked.
 
-+ Both $\color[rgb]{247, 118, 142}{VFS\\_FEXCLUSIVE}$ and VFS_EXCLUSIVE fail with EALREADY error, if user try --(s?) to lock already locked file.
++ Both $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$ and VFS_EXCLUSIVE fail with EALREADY error, if user try --(s?) to lock already locked file.
 
 + Both VFS_FEXCLUSIVE and VFS_EXCLUSIVE fail with EPERM error, if user try to unlock file, which he is not permited to.
 
