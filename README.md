@@ -22,7 +22,8 @@ User who blocked file can perform above operations without any limitations, from
 
  $\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$ system call takes two arguments, file descriptor and flag indicating action to perform. Following actions are supported:
 + EXCL_LOCK: Lock file indicated by file descriptor, to exclusive use for user performing call. If file wasn't unlocked earlier, then file will by automaticly unlocked at the moment of closing file descriptor.
-+ EXCL_LOCK_NO_OTHERS: Works same as EXCL_LOCK, but locks file ONLY if file is NOT open by any OTHER user at the moment (user who perform call, can have this file opened). If this conditions are not met, syscall ends with EAGAIN error.
++ EXCL_LOCK_NO_OTHERS: Works same as EXCL_LOCK, but locks file ONLY if file is NOT open by any OTHER user at the moment (user who perform call, can have this file opened). If this conditions are not met, syscall ends with  error.
+$\color[RGB]{42, 195, 222}{EAGAIN}$
 + EXCL_UNLOCK: Unlocks file indicated by file descriptor. File can by unlocked only by user, who locked it.
 + EXCL_UNLOCK_FORCE: Unlocks file indicated by file descriptor. File can be unlocked by user who locked it, by user who is owner of that file or by superuser (aka root, aka UID=0).
 
@@ -65,8 +66,6 @@ User who blocked file can perform above operations without any limitations, from
 + There are only NR_EXCLUSIVE simutanusy (?) locked files. If there are already NR_EXCLUSIVE locked files, every attempt to lock file will fail with ENOLCK error.
 
 $\color[RGB]{42, 195, 222}{???}$
-
-$\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$
 
 + $\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$ and $\color[RGB]{247, 118, 142}{VFS\\_EXCLUSIVE}$ provide interfase to same locking mechanism. User can lock file via $\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$ and unlock it via $\color[RGB]{247, 118, 142}{VFS\\_EXCLUSIVE}$ and vice versa (?).
 
