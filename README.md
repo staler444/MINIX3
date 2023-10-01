@@ -16,14 +16,13 @@ By them, user will be able to temporarly, on the indicated file, prevent other u
 + move and rename file (VFS_RENAME both cases, when blocked file is first or second argument of syscall)
 + remove (VFS_UNLINK)
 
-User who blocked file can perform above operations without any limitations, from difrent processes. Attempt to perform any of them by other users will end with EACESS error.
+User who blocked file can perform above operations without any limitations, from difrent processes. Attempt to perform any of them by other users will end with $\color[RGB]{42, 195, 222}{EACCES}$ error.
 
 ## VFS_FEXCLUSIVE
 
  $\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$ system call takes two arguments, file descriptor and flag indicating action to perform. Following actions are supported:
 + EXCL_LOCK: Lock file indicated by file descriptor, to exclusive use for user performing call. If file wasn't unlocked earlier, then file will by automaticly unlocked at the moment of closing file descriptor.
-+ EXCL_LOCK_NO_OTHERS: Works same as EXCL_LOCK, but locks file ONLY if file is NOT open by any OTHER user at the moment (user who perform call, can have this file opened). If this conditions are not met, syscall ends with  error.
-$\color[RGB]{42, 195, 222}{EAGAIN}$
++ EXCL_LOCK_NO_OTHERS: Works same as EXCL_LOCK, but locks file ONLY if file is NOT open by any OTHER user at the moment (user who perform call, can have this file opened). If this conditions are not met, syscall ends with $\color[RGB]{42, 195, 222}{EAGAIN}$ error.
 + EXCL_UNLOCK: Unlocks file indicated by file descriptor. File can by unlocked only by user, who locked it.
 + EXCL_UNLOCK_FORCE: Unlocks file indicated by file descriptor. File can be unlocked by user who locked it, by user who is owner of that file or by superuser (aka root, aka UID=0).
 
@@ -33,7 +32,7 @@ $\color[RGB]{42, 195, 222}{EAGAIN}$
 
 + EXCL_LOCK: Lock file indicated by path, to exclusive use for user performing call. Files stays locked until it's excplicitly unlocked by user. Only exception is when locked file is removed by user (by VFS_UNLINK) or replaced (locked file would be second argumnet of VFS_RENAME). In this case file will by automaticly unlocked when non process will have file opened (file became unused at the moment).
 
-+ EXCL_LOCK_NO_OTHERS: Works as EXCL_LOCK, but file is locked only if no other user have file opened (only caller user have is using file at the moment). If this condidion isn't met, call ends with EAGAIN error.
++ EXCL_LOCK_NO_OTHERS: Works as EXCL_LOCK, but file is locked only if no other user have file opened (only caller user have is using file at the moment). If this condidion isn't met, call ends with $\color[RGB]{42, 195, 222}{EAGAIN}$ error.
 
 + EXCL_UNLOCK: Unlocks file indicated by path. File can be unlocked only by user, who locked it.
 
@@ -41,7 +40,7 @@ $\color[RGB]{42, 195, 222}{EAGAIN}$
 
 ## Additional constraints
 
-+ Only simple files are locked. Attempt to lock directory/pseudodevice/pipe/fifi etc. will end with EFTYPE error.
++ Only simple files are locked. Attempt to lock directory/pseudodevice/pipe/fifi etc. will end with $\color[RGB]{42, 195, 222}{EFTYPE}$ error.
 
 + Always actual file is locked, indicated by file descriptor/path at the moment of call. File doesn't stop being locked after move (within same partition), rename, after accesing via link path. Techicaly actual v-node/i-node is being locked.
 
@@ -53,17 +52,17 @@ $\color[RGB]{42, 195, 222}{EAGAIN}$
 
 + With $\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$ user can only lock file if provided descriptor is open in read or write mode (or both). If not, call ends with EBADF error. 
 
-+ With $\color[RGB]{247, 118, 142}{VFS\\_EXCLUSIVE}$ user can only lock file if have rights to read/write that file. If not, call ends with EACCES error.
++ With $\color[RGB]{247, 118, 142}{VFS\\_EXCLUSIVE}$ user can only lock file if have rights to read/write that file. If not, call ends with $\color[RGB]{42, 195, 222}{EACCES}$ error.
 
 + $\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$ fail with EBADF if provided descriptor is not valid.
 
-+ Both $\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$ and $\color[RGB]{247, 118, 142}{VFS\\_EXCLUSIVE}$ fail with EINVAL error, if provided flag is incorrect, or file to unlock is not locked.
++ Both $\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$ and $\color[RGB]{247, 118, 142}{VFS\\_EXCLUSIVE}$ fail with $\color[RGB]{42, 195, 222}{EINVAL}$ error, if provided flag is incorrect, or file to unlock is not locked.
 
-+ Both $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$ and $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_EXCLUSIVE}$ fail with EALREADY error, if user try --(s?) to lock already locked file.
++ Both $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$ and $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_EXCLUSIVE}$ fail with $\color[RGB]{42, 195, 222}{EALREADY}$ error, if user try --(s?) to lock already locked file.
 
-+ Both $\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$ and $\color[RGB]{247, 118, 142}{VFS\\_EXCLUSIVE}$ fail with EPERM error, if user try to unlock file, which he is not permited to.
++ Both $\color[RGB]{247, 118, 142}{VFS\\_FEXCLUSIVE}$ and $\color[RGB]{247, 118, 142}{VFS\\_EXCLUSIVE}$ fail with $\color[RGB]{42, 195, 222}{EPERM}$ error, if user try to unlock file, which he is not permited to.
 
-+ There are only NR_EXCLUSIVE simutanusy (?) locked files. If there are already NR_EXCLUSIVE locked files, every attempt to lock file will fail with ENOLCK error.
++ There are only NR_EXCLUSIVE simutanusy (?) locked files. If there are already NR_EXCLUSIVE locked files, every attempt to lock file will fail with E$\color[RGB]{42, 195, 222}{ENOLCK}$ error.
 
 $\color[RGB]{42, 195, 222}{???}$
 
