@@ -57,7 +57,7 @@ VFS_EXCLUSIVE system call takes two arguments, path to file and dlag indicating 
 
 + Both VFS_FEXCLUSIVE and VFS_EXCLUSIVE fail with EINVAL error, if provided flag is incorrect, or file to unlock is not locked.
 
-+ Both $\text{VFS}$ and VFS_EXCLUSIVE fail with EALREADY error, if user try --(s?) to lock already locked file.
++ Both $\color{red}{VFS_FEXCLUSIVE}$ and VFS_EXCLUSIVE fail with EALREADY error, if user try --(s?) to lock already locked file.
 
 + Both VFS_FEXCLUSIVE and VFS_EXCLUSIVE fail with EPERM error, if user try to unlock file, which he is not permited to.
 
@@ -91,5 +91,3 @@ $\mathscr{\color{red}{this} \ \ \color{blue}{is \ \ a \ \ paragraph} \ \ \color{
 $\text{hello}$    #normal
 
 $\Large{hello}$$   #Bigger text size
-
-![SVG](https://server.powerupstudio.eu/svg?c=%3Csvg%20width%3D%22100%22%20height%3D%2250%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ctext%20x%3D%2210%22%20y%3D%2230%22%20fill%3D%22green%22%20font-family%3D%22Arial%22%3EGreen%3C%2Ftext%3E%3C%2Fsvg%3E)
