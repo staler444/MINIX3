@@ -91,5 +91,14 @@ $\mathscr{\color{red}{this} \ \ \color{blue}{is \ \ a \ \ paragraph} \ \ \color{
 $\text{hello}$    #normal
 
 $\Large{hello}$$   #Bigger text size
+<style>
+r { color: Red }
+o { color: Orange }
+g { color: Green }
+</style>
 
-<span style="color:blue">some *This is Blue italic.* text</span>
+# TODOs:
+
+- <r>TODO:</r> Important thing to do
+- <o>TODO:</o> Less important thing to do
+- <g>DONE:</g> Breath deeply and improve karma
