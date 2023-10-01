@@ -1,12 +1,13 @@
 # User's exclusive file lock
 Project's goal is to extend vfs server by user's exclusive file lock. Unlike standard flock, this locking mechanism will be mandatory, and will work at user's level (not precesses). Unlike standard file premissions, this mechanism will also implement temporary blocking, without need to change files atributes.
 
+
 # VFS server
 MINIX's Virtual File System server. For detailed description see [MINIX wiki](https://wiki.minix3.org/doku.php?id=developersguide:vfsinternals).
 
 # VFS_FEXCLUSIVE and VFS_EXCLUSIVE system calls
 
-New blocking mechanism will depend on two new system calls handled by vfs server, $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and VFS_EXCLUSIVE.
+New blocking mechanism will depend on two new system calls handled by vfs server, $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$ and $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_EXCLUSIVE}$.
 By them, user will be able to temporarly, on the indicated file, prevent other users to perform operations listet down below:
 + open (VFS_OPEN and VFS_CREATE syscalls)
 + read (VFS_READ)
@@ -27,7 +28,7 @@ User who blocked file can perform above operations without any limitations, from
 
 ## VFS_EXCLUSIVE
 
-VFS_EXCLUSIVE system call takes two arguments, path to file and dlag indicating action to perform. Following actions are supported:
+$\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_EXCLUSIVE}$ system call takes two arguments, path to file and dlag indicating action to perform. Following actions are supported:
 
 + EXCL_LOCK: Lock file indicated by path, to exclusive use for user performing call. Files stays locked until it's excplicitly unlocked by user. Only exception is when locked file is removed by user (by VFS_UNLINK) or replaced (locked file would be second argumnet of VFS_RENAME). In this case file will by automaticly unlocked when non process will have file opened (file became unused at the moment).
 
@@ -51,19 +52,19 @@ VFS_EXCLUSIVE system call takes two arguments, path to file and dlag indicating 
 
 + With $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  user can only lock file if provided descriptor is open in read or write mode (or both). If not, call ends with EBADF error. 
 
-+ With VFS_EXCLUSIVE user can only lock file if have rights to read/write that file. If not, call ends with EACCES error.
++ With $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_EXCLUSIVE}$ user can only lock file if have rights to read/write that file. If not, call ends with EACCES error.
 
 + $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  fail with EBADF if provided descriptor is not valid.
 
-+ Both $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and VFS_EXCLUSIVE fail with EINVAL error, if provided flag is incorrect, or file to unlock is not locked.
++ Both $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_EXCLUSIVE}$ fail with EINVAL error, if provided flag is incorrect, or file to unlock is not locked.
 
-+ Both $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$ and VFS_EXCLUSIVE fail with EALREADY error, if user try --(s?) to lock already locked file.
++ Both $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$ and $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_EXCLUSIVE}$ fail with EALREADY error, if user try --(s?) to lock already locked file.
 
-+ Both $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and VFS_EXCLUSIVE fail with EPERM error, if user try to unlock file, which he is not permited to.
++ Both $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_EXCLUSIVE}$ fail with EPERM error, if user try to unlock file, which he is not permited to.
 
 + There are only NR_EXCLUSIVE simutanusy (?) locked files. If there are already NR_EXCLUSIVE locked files, every attempt to lock file will fail with ENOLCK error.
 
-+ $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and VFS_EXCLUSIVE provide interfase to same locking mechanism. User can lock file via $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and unlock it via VFS_EXCLUSIVE and vice versa (?).
++ $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_EXCLUSIVE}$ provide interfase to same locking mechanism. User can lock file via $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_FEXCLUSIVE}$  and unlock it via $\color[rgb]{0.9686274509803922, 0.4627450980392157, 0.5568627450980392}{VFS\\_EXCLUSIVE}$ and vice versa (?).
 
 # Project's structure
 
