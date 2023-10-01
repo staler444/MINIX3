@@ -91,6 +91,7 @@ $\mathscr{\color{red}{this} \ \ \color{blue}{is \ \ a \ \ paragraph} \ \ \color{
 $\text{hello}$    #normal
 
 $\Large{hello}$$   #Bigger text size
+
 <style>
 r { color: Red }
 o { color: Orange }
