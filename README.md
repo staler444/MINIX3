@@ -1,5 +1,5 @@
 # User's exclusive file lock
-Project's goal is to extend vfs server by user's exclusive file lock. Unlike standard [flock](https://linux.die.net/man/2/flock), this locking mechanism will be mandatory, and will work at user level (not precesses). Unlike standard file premissions, this mechanism will also implement temporary blocking, without need to change file atributes.
+Project's goal is to extend MINIX3 operating system by user's exclusive file lock. Unlike standard [flock](https://linux.die.net/man/2/flock), this locking mechanism will be mandatory, and will work at user level (not precesses). Unlike standard file premissions, this mechanism will also implement temporary blocking, without need to change file atributes.
 
 
 # VFS server
